@@ -385,7 +385,7 @@ void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL)
 			{ 
 				objectAL.at<uchar>(i, j) = 255; 
 			}
-	free(labeltable);
+	delete[] labeltable;
 	labeltable = nullptr;
 }
 
