@@ -116,7 +116,7 @@ int main()
 
 	Mat area_L, area_I;			//輸出用(8UC3、8UC3)
 	DrawLabel(area, area_L);
-	DrawEdge(area, image, area_I);
+	DrawImage(area, image, area_I);
 
 	string area_B_file = filepath + "\\" + infilename + "_6.0_AREA(B).png";			//基於面的切割結果(二值)
 	imwrite(area_B_file, area);
@@ -218,7 +218,7 @@ int main()
 
 	Mat line_L, line_I;			//輸出用(8UC3、8UC3)
 	DrawLabel(line, line_L);
-	DrawEdge(line, image, line_I);
+	DrawImage(line, image, line_I);
 
 	string line_B_file = filepath + "\\" + infilename + "_13.0_LINE(B).png";			//基於線的切割結果(二值)
 	imwrite(line_B_file, line);
@@ -236,7 +236,7 @@ int main()
 
 	Mat objectCOM_L, objectCOM_I;			//輸出用(8UC3、8UC3)
 	DrawLabel(objectCOM, objectCOM_L);
-	DrawEdge(objectCOM, image, objectCOM_I);
+	DrawImage(objectCOM, image, objectCOM_I);
 
 	string  objectCOM_B_file = filepath + "\\" + infilename + "_14.0_COM_O(B).png";			//結合面與線(二值)
 	imwrite(objectCOM_B_file, objectCOM);
@@ -253,7 +253,7 @@ int main()
 
 	Mat objectOpen_L, objectOpen_I;			//輸出用(8UC3、8UC3)
 	DrawLabel(objectOpen, objectOpen_L);
-	DrawEdge(objectOpen, image, objectOpen_I);
+	DrawImage(objectOpen, image, objectOpen_I);
 
 	string  objectOpen_B_file = filepath + "\\" + infilename + "_15.0_OPEN_O(B).png";			//開運算(二值)
 	imwrite(objectOpen_B_file, objectOpen);
@@ -283,7 +283,7 @@ int main()
 
 	Mat objectFH_L, objectFH_I;			//輸出用(8UC3、8UC3)
 	DrawLabel(objectFH, objectFH_L);
-	DrawEdge(objectFH, image, objectFH_I);
+	DrawImage(objectFH, image, objectFH_I);
 
 	string  objectFH_B_file = filepath + "\\" + infilename + "_17.0_FH_O(B).png";			//填補空洞(二值)
 	imwrite(objectFH_B_file, objectFH);
@@ -339,7 +339,7 @@ int main()
 
 	Mat objectWT_L, objectWT_I;		//輸出用(8UC3、8UC3)
 	DrawLabel(objectWT, objectWT_L);
-	DrawEdge(objectWT, image, objectWT_I);
+	DrawImage(objectWT, image, objectWT_I);
 
 	string  objectWT_B_file = filepath + "\\" + infilename + "_21.0_WT_O(B).png";			//分水嶺演算法(二值)
 	imwrite(objectWT_B_file, objectWT);
@@ -369,7 +369,7 @@ int main()
 
 	//Mat objectFH2_L, objectFH2_I;			//輸出用2(8UC3、8UC3)
 	//DrawLabel(objectFH2, objectFH2_L);
-	//DrawEdge(objectFH2, image, objectFH2_I);
+	//DrawImage(objectFH2, image, objectFH2_I);
 
 	//string  objectFH2_B_file = filepath + "\\" + infilename + "_22.0_FH2_O(B).png";			//填補空洞2(二值)
 	//imwrite(objectFH2_B_file, objectFH2);
@@ -425,7 +425,7 @@ int main()
 
 	//Mat objectWT2_L, objectWT2_I;		//輸出用(8UC3、8UC3)
 	//DrawLabel(objectWT2, objectWT2_L);
-	//DrawEdge(objectWT2, image, objectWT2_I);
+	//DrawImage(objectWT2, image, objectWT2_I);
 
 	//string  objectWT2_B_file = filepath + "\\" + infilename + "_26.0_WT2_O(B).png";			//分水嶺演算法2(二值)
 	//imwrite(objectWT2_B_file, objectWT2);

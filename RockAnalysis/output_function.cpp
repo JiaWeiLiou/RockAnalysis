@@ -1,6 +1,6 @@
 #include "output_function.h"
 
-/*尋找根結點*/
+//尋找根結點
 int findroot(int labeltable[], int label)
 {
 	int x = label;
@@ -9,13 +9,13 @@ int findroot(int labeltable[], int label)
 	return x;
 }
 
-/*尋找連通物*/
-int bwlabel(InputArray _binaryImg, OutputArray _labels, int nears)
+//尋找連通物
+int bwlabel(InputArray _bwImage, OutputArray _labels, int nears)
 {
-	Mat binaryImg = _binaryImg.getMat();
-	CV_Assert(binaryImg.type() == CV_8UC1);
+	Mat bwImage = _bwImage.getMat();
+	CV_Assert(bwImage.type() == CV_8UC1);
 
-	_labels.create(binaryImg.size(), CV_32SC1);
+	_labels.create(bwImage.size(), CV_32SC1);
 	Mat labels = _labels.getMat();
 	labels = Scalar(0);
 
@@ -23,8 +23,8 @@ int bwlabel(InputArray _binaryImg, OutputArray _labels, int nears)
 		nears = 8;
 
 	int nobj = 0;    // number of objects found in image  
-	int *labeltable = new int[binaryImg.rows*binaryImg.cols];		// initialize label table with zero  
-	memset(labeltable, 0, binaryImg.rows*binaryImg.cols * sizeof(int));
+	int *labeltable = new int[bwImage.rows*bwImage.cols];		// initialize label table with zero  
+	memset(labeltable, 0, bwImage.rows*bwImage.cols * sizeof(int));
 	int ntable = 0;
 
 	//	labeling scheme
@@ -39,9 +39,9 @@ int bwlabel(InputArray _binaryImg, OutputArray _labels, int nears)
 	//	8 : A connects to B, C, D, and E
 
 
-	for (int i = 0; i < binaryImg.rows; i++)
-		for (int j = 0; j < binaryImg.cols; j++)
-			if (binaryImg.at<uchar>(i, j) == 255)   // if A is an object  
+	for (int i = 0; i < bwImage.rows; i++)
+		for (int j = 0; j < bwImage.cols; j++)
+			if (bwImage.at<uchar>(i, j) == 255)   // if A is an object  
 			{
 				// get the neighboring labels B, C, D, and E
 				int B, C, D, E;
@@ -55,7 +55,7 @@ int bwlabel(InputArray _binaryImg, OutputArray _labels, int nears)
 				if (i == 0 || j == 0) { D = 0; }
 				else { D = findroot(labeltable, labels.at<int>(i - 1, j - 1)); }
 
-				if (i == 0 || j == binaryImg.cols - 1) { E = 0; }
+				if (i == 0 || j == bwImage.cols - 1) { E = 0; }
 				else { E = findroot(labeltable, labels.at<int>(i - 1, j + 1)); }
 
 				if (nears == 4)		// apply 4 connectedness  
@@ -116,15 +116,15 @@ int bwlabel(InputArray _binaryImg, OutputArray _labels, int nears)
 			for (int i = 0; i <= ntable; i++)
 				labeltable[i] = findroot(labeltable, i);	// consolidate component table  
 
-			for (int i = 0; i < binaryImg.rows; i++)
-				for (int j = 0; j < binaryImg.cols; j++)
+			for (int i = 0; i < bwImage.rows; i++)
+				for (int j = 0; j < bwImage.cols; j++)
 					labels.at<int>(i, j) = labeltable[labels.at<int>(i, j)];	// run image through the look-up table  
 
 			// count up the objects in the image  
 			for (int i = 0; i <= ntable; i++)
 				labeltable[i] = 0;		//clear all table label
-			for (int i = 0; i < binaryImg.rows; i++)
-				for (int j = 0; j < binaryImg.cols; j++)
+			for (int i = 0; i < bwImage.rows; i++)
+				for (int j = 0; j < bwImage.cols; j++)
 					++labeltable[labels.at<int>(i, j)];		//calculate all label numbers
 
 			labeltable[0] = 0;		//clear 0 label
@@ -133,8 +133,8 @@ int bwlabel(InputArray _binaryImg, OutputArray _labels, int nears)
 					labeltable[i] = ++nobj;	// number the objects from 1 through n objects  and reset label table
 
 			// run through the look-up table again  
-			for (int i = 0; i < binaryImg.rows; i++)
-				for (int j = 0; j < binaryImg.cols; j++)
+			for (int i = 0; i < bwImage.rows; i++)
+				for (int j = 0; j < bwImage.cols; j++)
 					labels.at<int>(i, j) = labeltable[labels.at<int>(i, j)];
 
 			delete[] labeltable;
@@ -142,7 +142,7 @@ int bwlabel(InputArray _binaryImg, OutputArray _labels, int nears)
 			return nobj;
 }
 
-/*創建色環*/
+//創建色環
 void makecolorwheel(vector<Scalar> &colorwheel)
 {
 	int RY = 15;	//紅色(Red)     至黃色(Yellow)
@@ -160,7 +160,7 @@ void makecolorwheel(vector<Scalar> &colorwheel)
 	for (int i = 0; i < MR; i++) colorwheel.push_back(Scalar(255, 0, 255 - 255 * i / MR));
 }
 
-/*創建色條*/
+//創建色條
 void makecolorbar(vector<Scalar> &colorbar)
 {
 	vector<Scalar> maincolor;
@@ -191,8 +191,71 @@ void makecolorbar(vector<Scalar> &colorbar)
 	}
 }
 
-/*將灰階圖片轉以色條顯示*/
-void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, int upperbound, int lowerbound)
+//將灰階圖像轉以灰階色條顯示
+void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage)
+{
+	Mat grayImage;
+	Mat temp = _grayImage.getMat();
+	if (temp.type() == CV_16SC2) { temp.convertTo(grayImage, CV_32FC2); }
+	else if (temp.type() == CV_16SC1) { temp.convertTo(grayImage, CV_32FC1); }
+	else { grayImage = _grayImage.getMat(); }
+
+	_graybarImage.create(grayImage.size(), CV_8UC1);
+	Mat graybarImage = _graybarImage.getMat();
+
+	// determine motion range:  
+	float maxvalue = 255;
+
+	if (grayImage.type() == CV_8UC1)
+	{
+		//// Find max value
+		//for (int i = 0; i < grayImage.rows; ++i)
+		//	for (int j = 0; j < grayImage.cols; ++j)
+		//		maxvalue = maxvalue > grayImage.at<uchar>(i, j) ? maxvalue : grayImage.at<uchar>(i, j);
+
+		//linear stretch to 255
+		for (int i = 0; i < grayImage.rows; ++i)
+			for (int j = 0; j < grayImage.cols; ++j)
+				graybarImage.at<uchar>(i, j) = ((float)grayImage.at<uchar>(i, j) / maxvalue) * 255;
+	}
+	else if (grayImage.type() == CV_32FC1)
+	{
+		//// Find max value
+		//for (int i = 0; i < grayImage.rows; ++i)
+		//	for (int j = 0; j < grayImage.cols; ++j)
+		//		maxvalue = maxvalue > abs(grayImage.at<float>(i, j)) ? maxvalue : abs(grayImage.at<float>(i, j));
+
+		//linear stretch to 255
+		for (int i = 0; i < grayImage.rows; ++i)
+			for (int j = 0; j < grayImage.cols; ++j)
+				graybarImage.at<uchar>(i, j) = ((float)abs(grayImage.at<float>(i, j)) / maxvalue) * 255;
+	}
+	else if (grayImage.type() == CV_32FC2)
+	{
+		//// Find max value
+		//for (int i = 0; i < grayImage.rows; ++i)
+		//	for (int j = 0; j < grayImage.cols; ++j)
+		//	{
+		//		float fx = grayImage.at<Vec2f>(i, j)[0];
+		//		float fy = grayImage.at<Vec2f>(i, j)[1];
+		//		float absvalue = sqrt(fx * fx + fy * fy);
+		//		maxvalue = maxvalue > absvalue ? maxvalue : absvalue;
+		//	}
+
+		//linear stretch to 255
+		for (int i = 0; i < grayImage.rows; ++i)
+			for (int j = 0; j < grayImage.cols; ++j)
+			{
+				float fx = grayImage.at<Vec2f>(i, j)[0];
+				float fy = grayImage.at<Vec2f>(i, j)[1];
+				float absvalue = sqrt(fx * fx + fy * fy);
+				graybarImage.at<uchar>(i, j) = (absvalue / maxvalue) * 255;
+			}
+	}
+}
+
+//將灰階圖像轉以紅藍色條顯示
+void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage)
 {
 	Mat grayImage;
 	Mat temp = _grayImage.getMat();
@@ -205,7 +268,7 @@ void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, int upperbo
 	static vector<Scalar> colorbar; //Scalar i,g,b  
 	if (colorbar.empty()) { makecolorbar(colorbar); }
 
-	int maxrad = upperbound - lowerbound + 1;
+	int maxrad = 256;
 
 	if (grayImage.type() == CV_8UC1)
 		for (int i = 0; i < colorbarImage.rows; ++i)
@@ -253,123 +316,8 @@ void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, int upperbo
 			}
 }
 
-/*將圖片轉以色環方向場顯示(輸入梯度場或梯度方向)*/
-void DrawColorRing(InputArray _field, OutputArray _colorField)
-{
-	Mat field;
-	Mat temp = _field.getMat();
-	if (temp.type() == CV_16SC2) {
-		temp.convertTo(field, CV_32FC2);
-	}
-	else {
-		field = _field.getMat();
-	}
-
-	_colorField.create(field.size(), CV_8UC3);
-	Mat colorField = _colorField.getMat();
-
-	static vector<Scalar> colorwheel; //Scalar i,g,b  
-	if (colorwheel.empty())
-		makecolorwheel(colorwheel);
-
-	// determine motion range:  
-	int maxrad = -1;
-
-	if (field.type() == CV_32FC1)
-	{
-		maxrad = 255;		//只有梯度方向無梯度幅值
-
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
-			{
-				uchar *data = colorField.data + colorField.step[0] * i + colorField.step[1] * j;
-
-				if (field.at<float>(i, j) == -1000.0f)		//用以顯示無梯度方向
-				{
-					for (int b = 0; b < 3; b++)
-					{
-						data[2 - b] = 255;
-					}
-				}
-				else
-				{
-					float rad = maxrad;
-
-					float angle = field.at<float>(i, j) / CV_PI;    //單位為-1至+1
-					float fk = (angle + 1.0) / 2.0 * (colorwheel.size() - 1);  //計算角度對應之索引位置
-					int k0 = (int)fk;
-					int k1 = (k0 + 1) % colorwheel.size();
-					float f = fk - k0;
-
-					float col0 = 0.0f;
-					float col1 = 0.0f;
-					float col = 0.0f;
-					for (int b = 0; b < 3; b++)
-					{
-						col0 = colorwheel[k0][b] / 255.0f;
-						col1 = colorwheel[k1][b] / 255.0f;
-						col = (1 - f) * col0 + f * col1;
-						if (rad <= 1)
-							col = 1 - rad * (1 - col); // increase saturation with radius  
-						else
-							col = col;  //out of range
-						data[2 - b] = (int)(255.0f * col);
-					}
-				}
-			}
-	}
-	else if (field.type() == CV_32FC2)
-	{
-		// Find max flow to normalize fx and fy  
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
-			{
-				Vec2f field_at_point = field.at<Vec2f>(i, j);
-				float fx = field_at_point[0];
-				float fy = field_at_point[1];
-				float rad = sqrt(fx * fx + fy * fy);
-				maxrad = maxrad > rad ? maxrad : rad;
-			}
-
-		maxrad = maxrad / 2;		//加深顯示結果(可取消此行)
-
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
-			{
-				uchar *data = colorField.data + colorField.step[0] * i + colorField.step[1] * j;
-				Vec2f field_at_point = field.at<Vec2f>(i, j);
-
-				float fx = field_at_point[0];
-				float fy = field_at_point[1];
-
-				float rad = sqrt(fx * fx + fy * fy) / maxrad;
-
-				float angle = atan2(fy, fx) / CV_PI;    //單位為-1至+1
-				float fk = (angle + 1.0) / 2.0 * (colorwheel.size() - 1);  //計算角度對應之索引位置
-				int k0 = (int)fk;
-				int k1 = (k0 + 1) % colorwheel.size();
-				float f = fk - k0;
-
-				float col0 = 0.0f;
-				float col1 = 0.0f;
-				float col = 0.0f;
-				for (int b = 0; b < 3; b++)
-				{
-					col0 = colorwheel[k0][b] / 255.0f;
-					col1 = colorwheel[k1][b] / 255.0f;
-					col = (1 - f) * col0 + f * col1;
-					if (rad <= 1)
-						col = 1 - rad * (1 - col); // increase saturation with radius  
-					else
-						col = col;  //out of range
-					data[2 - b] = (int)(255.0f * col);
-				}
-			}
-	}
-}
-
-/*將圖片轉以色環方向場顯示(輸入梯度幅值及梯度方向)*/
-void DrawColorRing(InputArray _gradm, InputArray _gradd, OutputArray _colorField)
+//將梯度圖像轉以色環方向顯示
+void DrawColorRing(InputArray _gradm, InputArray _gradd, OutputArray _colorringImage)
 {
 	Mat gradm;
 	Mat temp1 = _gradm.getMat();
@@ -381,8 +329,8 @@ void DrawColorRing(InputArray _gradm, InputArray _gradd, OutputArray _colorField
 	if (temp2.type() == CV_8UC1) { temp2.convertTo(gradd, CV_32FC1); }
 	else { gradd = _gradd.getMat(); }
 
-	_colorField.create(gradm.size(), CV_8UC3);
-	Mat colorField = _colorField.getMat();
+	_colorringImage.create(gradm.size(), CV_8UC3);
+	Mat colorringImage = _colorringImage.getMat();
 
 	static vector<Scalar> colorwheel; //Scalar i,g,b  
 	if (colorwheel.empty())
@@ -404,7 +352,7 @@ void DrawColorRing(InputArray _gradm, InputArray _gradd, OutputArray _colorField
 	for (int i = 0; i < gradm.rows; ++i)
 		for (int j = 0; j < gradm.cols; ++j)
 		{
-			uchar *data = colorField.data + colorField.step[0] * i + colorField.step[1] * j;
+			uchar *data = colorringImage.data + colorringImage.step[0] * i + colorringImage.step[1] * j;
 
 			if (gradd.at<float>(i, j) == -1000.0f)		//用以顯示無梯度方向
 			{
@@ -441,71 +389,123 @@ void DrawColorRing(InputArray _gradm, InputArray _gradd, OutputArray _colorField
 		}
 }
 
-/*將圖片轉線性拉伸並以灰階值顯示*/
-void DrawGrayBar(InputArray _field, OutputArray _grayField)
+//將梯度圖像轉以色環方向顯示
+void DrawColorRing(InputArray _gradf, OutputArray _colorringImage)
 {
-	Mat field;
-	Mat temp = _field.getMat();
-	if (temp.type() == CV_16SC2) { temp.convertTo(field, CV_32FC2); }
-	else if (temp.type() == CV_16SC1) { temp.convertTo(field, CV_32FC1); }
-	else { field = _field.getMat(); }
+	Mat gradf;
+	Mat temp = _gradf.getMat();
+	if (temp.type() == CV_16SC2) {
+		temp.convertTo(gradf, CV_32FC2);
+	}
+	else {
+		gradf = _gradf.getMat();
+	}
 
-	_grayField.create(field.size(), CV_8UC1);
-	Mat grayField = _grayField.getMat();
+	_colorringImage.create(gradf.size(), CV_8UC3);
+	Mat colorringImage = _colorringImage.getMat();
+
+	static vector<Scalar> colorwheel; //Scalar i,g,b  
+	if (colorwheel.empty())
+		makecolorwheel(colorwheel);
 
 	// determine motion range:  
-	float maxvalue = 0;
+	int maxrad = -1;
 
-	if (field.type() == CV_8UC1)
+	if (gradf.type() == CV_32FC1)
 	{
-		// Find max value
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
-				maxvalue = maxvalue > field.at<uchar>(i, j) ? maxvalue : field.at<uchar>(i, j);
+		maxrad = 255;		//只有梯度方向無梯度幅值
 
-		//linear stretch to 255
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
-				grayField.at<uchar>(i, j) = ((float)field.at<uchar>(i, j) / maxvalue) * 255;
-	}
-	else if (field.type() == CV_32FC1)
-	{
-		// Find max value
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
-				maxvalue = maxvalue > abs(field.at<float>(i, j)) ? maxvalue : abs(field.at<float>(i, j));
-
-		//linear stretch to 255
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
-				grayField.at<uchar>(i, j) = ((float)abs(field.at<float>(i, j)) / maxvalue) * 255;
-	}
-	else if (field.type() == CV_32FC2)
-	{
-		// Find max value
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
+		for (int i = 0; i < gradf.rows; ++i)
+			for (int j = 0; j < gradf.cols; ++j)
 			{
-				float fx = field.at<Vec2f>(i, j)[0];
-				float fy = field.at<Vec2f>(i, j)[1];
-				float absvalue = sqrt(fx * fx + fy * fy);
-				maxvalue = maxvalue > absvalue ? maxvalue : absvalue;
+				uchar *data = colorringImage.data + colorringImage.step[0] * i + colorringImage.step[1] * j;
+
+				if (gradf.at<float>(i, j) == -1000.0f)		//用以顯示無梯度方向
+				{
+					for (int b = 0; b < 3; b++)
+					{
+						data[2 - b] = 255;
+					}
+				}
+				else
+				{
+					float rad = maxrad;
+
+					float angle = gradf.at<float>(i, j) / CV_PI;    //單位為-1至+1
+					float fk = (angle + 1.0) / 2.0 * (colorwheel.size() - 1);  //計算角度對應之索引位置
+					int k0 = (int)fk;
+					int k1 = (k0 + 1) % colorwheel.size();
+					float f = fk - k0;
+
+					float col0 = 0.0f;
+					float col1 = 0.0f;
+					float col = 0.0f;
+					for (int b = 0; b < 3; b++)
+					{
+						col0 = colorwheel[k0][b] / 255.0f;
+						col1 = colorwheel[k1][b] / 255.0f;
+						col = (1 - f) * col0 + f * col1;
+						if (rad <= 1)
+							col = 1 - rad * (1 - col); // increase saturation with radius  
+						else
+							col = col;  //out of range
+						data[2 - b] = (int)(255.0f * col);
+					}
+				}
+			}
+	}
+	else if (gradf.type() == CV_32FC2)
+	{
+		// Find max flow to normalize fx and fy  
+		for (int i = 0; i < gradf.rows; ++i)
+			for (int j = 0; j < gradf.cols; ++j)
+			{
+				Vec2f gradf_at_point = gradf.at<Vec2f>(i, j);
+				float fx = gradf_at_point[0];
+				float fy = gradf_at_point[1];
+				float rad = sqrt(fx * fx + fy * fy);
+				maxrad = maxrad > rad ? maxrad : rad;
 			}
 
-		//linear stretch to 255
-		for (int i = 0; i < field.rows; ++i)
-			for (int j = 0; j < field.cols; ++j)
+		maxrad = maxrad / 2;		//加深顯示結果(可取消此行)
+
+		for (int i = 0; i < gradf.rows; ++i)
+			for (int j = 0; j < gradf.cols; ++j)
 			{
-				float fx = field.at<Vec2f>(i, j)[0];
-				float fy = field.at<Vec2f>(i, j)[1];
-				float absvalue = sqrt(fx * fx + fy * fy);
-				grayField.at<uchar>(i, j) = (absvalue / maxvalue) * 255;
+				uchar *data = colorringImage.data + colorringImage.step[0] * i + colorringImage.step[1] * j;
+				Vec2f gradf_at_point = gradf.at<Vec2f>(i, j);
+
+				float fx = gradf_at_point[0];
+				float fy = gradf_at_point[1];
+
+				float rad = sqrt(fx * fx + fy * fy) / maxrad;
+
+				float angle = atan2(fy, fx) / CV_PI;    //單位為-1至+1
+				float fk = (angle + 1.0) / 2.0 * (colorwheel.size() - 1);  //計算角度對應之索引位置
+				int k0 = (int)fk;
+				int k1 = (k0 + 1) % colorwheel.size();
+				float f = fk - k0;
+
+				float col0 = 0.0f;
+				float col1 = 0.0f;
+				float col = 0.0f;
+				for (int b = 0; b < 3; b++)
+				{
+					col0 = colorwheel[k0][b] / 255.0f;
+					col1 = colorwheel[k1][b] / 255.0f;
+					col = (1 - f) * col0 + f * col1;
+					if (rad <= 1)
+						col = 1 - rad * (1 - col); // increase saturation with radius  
+					else
+						col = col;  //out of range
+					data[2 - b] = (int)(255.0f * col);
+				}
 			}
 	}
 }
 
-/*將結果以標籤顯示*/
-void DrawLabel(InputArray _bwImage, OutputArray _combineLabel)
+//將二值圖像轉以標籤顯示
+void DrawLabel(InputArray _bwImage, OutputArray _labelImage)
 {
 	Mat bwImage;
 	Mat temp = _bwImage.getMat();
@@ -513,8 +513,8 @@ void DrawLabel(InputArray _bwImage, OutputArray _combineLabel)
 	if (temp.type() == CV_32FC1) { temp.convertTo(bwImage, CV_8UC1); }
 	else { bwImage = temp; }
 
-	_combineLabel.create(bwImage.size(), CV_8UC3);
-	Mat combineLabel = _combineLabel.getMat();
+	_labelImage.create(bwImage.size(), CV_8UC3);
+	Mat labelImage = _labelImage.getMat();
 
 	Mat object(bwImage.size(), CV_8UC1);
 	for (int i = 0; i < bwImage.rows; i++)
@@ -529,28 +529,28 @@ void DrawLabel(InputArray _bwImage, OutputArray _combineLabel)
 			vector<Scalar> color;
 
 			color.push_back(Scalar(0, 0, 0));
-			for (int i = 1; i <= objectNum; i++) { color.push_back(Scalar(rng.uniform(20, 255), rng.uniform(20, 255), rng.uniform(20, 255))); }
+			for (int i = 1; i <= objectNum; i++) { color.push_back(Scalar(rng.uniform(50, 255), rng.uniform(50, 255), rng.uniform(50, 255))); }	//防止深色看不清楚
 
 			for (int i = 0; i < bwImage.rows; i++)
 				for (int j = 0; j < bwImage.cols; j++)
 				{
-					combineLabel.at<Vec3b>(i, j)[0] = color[labels.at<int>(i, j)][0];
-					combineLabel.at<Vec3b>(i, j)[1] = color[labels.at<int>(i, j)][1];
-					combineLabel.at<Vec3b>(i, j)[2] = color[labels.at<int>(i, j)][2];
+					labelImage.at<Vec3b>(i, j)[0] = color[labels.at<int>(i, j)][0];
+					labelImage.at<Vec3b>(i, j)[1] = color[labels.at<int>(i, j)][1];
+					labelImage.at<Vec3b>(i, j)[2] = color[labels.at<int>(i, j)][2];
 				}
 }
 
-/*將結果顯示在彩色圖像上*/
-void DrawEdge(InputArray _bwImage, InputArray _realImage, OutputArray _combineImage)
+//將二值圖像結合原始影像轉以疊合圖像顯示
+void DrawImage(InputArray _bwImage, InputArray _image, OutputArray _combineImage)
 {
 	Mat bwImage = _bwImage.getMat();
 	CV_Assert(bwImage.type() == CV_8UC1);
 
-	Mat realImage = _realImage.getMat();
+	Mat image = _image.getMat();
 
-	if (realImage.type() == CV_8UC1)
+	if (image.type() == CV_8UC1)
 	{
-		_combineImage.create(realImage.size(), CV_8UC3);
+		_combineImage.create(image.size(), CV_8UC3);
 		Mat combineImage = _combineImage.getMat();
 
 		for (int i = 0; i < bwImage.rows; i++)
@@ -564,15 +564,15 @@ void DrawEdge(InputArray _bwImage, InputArray _realImage, OutputArray _combineIm
 				}
 				else
 				{
-					combineImage.at<Vec3b>(i, j)[0] = realImage.at<uchar>(i, j);
-					combineImage.at<Vec3b>(i, j)[1] = realImage.at<uchar>(i, j);
-					combineImage.at<Vec3b>(i, j)[2] = realImage.at<uchar>(i, j);
+					combineImage.at<Vec3b>(i, j)[0] = image.at<uchar>(i, j);
+					combineImage.at<Vec3b>(i, j)[1] = image.at<uchar>(i, j);
+					combineImage.at<Vec3b>(i, j)[2] = image.at<uchar>(i, j);
 				}
 			}
 	}
-	else if (realImage.type() == CV_8UC3)
+	else if (image.type() == CV_8UC3)
 	{
-		_combineImage.create(realImage.size(), CV_8UC3);
+		_combineImage.create(image.size(), CV_8UC3);
 		Mat combineImage = _combineImage.getMat();
 
 		for (int i = 0; i < bwImage.rows; i++)
@@ -581,21 +581,21 @@ void DrawEdge(InputArray _bwImage, InputArray _realImage, OutputArray _combineIm
 				if (bwImage.at<uchar>(i, j) == 0)
 				{
 					combineImage.at<Vec3b>(i, j)[0] = 255;
-					combineImage.at<Vec3b>(i, j)[1] = realImage.at<Vec3b>(i, j)[1];
-					combineImage.at<Vec3b>(i, j)[2] = realImage.at<Vec3b>(i, j)[2];
+					combineImage.at<Vec3b>(i, j)[1] = image.at<Vec3b>(i, j)[1];
+					combineImage.at<Vec3b>(i, j)[2] = image.at<Vec3b>(i, j)[2];
 				}
 				else
 				{
-					combineImage.at<Vec3b>(i, j)[0] = realImage.at<Vec3b>(i, j)[0];
-					combineImage.at<Vec3b>(i, j)[1] = realImage.at<Vec3b>(i, j)[1];
-					combineImage.at<Vec3b>(i, j)[2] = realImage.at<Vec3b>(i, j)[2];
+					combineImage.at<Vec3b>(i, j)[0] = image.at<Vec3b>(i, j)[0];
+					combineImage.at<Vec3b>(i, j)[1] = image.at<Vec3b>(i, j)[1];
+					combineImage.at<Vec3b>(i, j)[2] = image.at<Vec3b>(i, j)[2];
 				}
 			}
 	}
 }
 
-/*將種子點顯示在原物件上*/
-void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineSeed)
+//將種子點結合原物件轉以疊合圖像顯示
+void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineImae)
 {
 	Mat object = _object.getMat();
 	CV_Assert(object.type() == CV_8UC1);
@@ -603,14 +603,14 @@ void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineSe
 	Mat objectSeed = _objectSeed.getMat();
 	CV_Assert(objectSeed.type() == CV_8UC1);
 
-	_combineSeed.create(object.size(), CV_8UC1);
-	Mat combineSeed = _combineSeed.getMat();
+	_combineImae.create(object.size(), CV_8UC1);
+	Mat combineImae = _combineImae.getMat();
 
-	for (int i = 0; i < combineSeed.rows; ++i)
-		for (int j = 0; j < combineSeed.cols; ++j)
+	for (int i = 0; i < combineImae.rows; ++i)
+		for (int j = 0; j < combineImae.cols; ++j)
 		{
-			if (object.at<uchar>(i, j) == 255) { combineSeed.at<uchar>(i, j) = 128; }
-			if (objectSeed.at<uchar>(i, j) == 255) { combineSeed.at<uchar>(i, j) = 255; }
-			if (object.at<uchar>(i, j) == 0) { combineSeed.at<uchar>(i, j) = 0; }
+			if (object.at<uchar>(i, j) == 255) { combineImae.at<uchar>(i, j) = 128; }
+			if (objectSeed.at<uchar>(i, j) == 255) { combineImae.at<uchar>(i, j) = 255; }
+			if (object.at<uchar>(i, j) == 0) { combineImae.at<uchar>(i, j) = 0; }
 		}
 }
