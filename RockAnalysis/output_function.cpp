@@ -192,7 +192,7 @@ void makecolorbar(vector<Scalar> &colorbar)
 }
 
 //將灰階圖像轉以灰階色條顯示
-void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage)
+void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage, bool flag)
 {
 	Mat grayImage;
 	Mat temp = _grayImage.getMat();
@@ -206,56 +206,75 @@ void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage)
 	// determine motion range:  
 	float maxvalue = 255;
 
-	if (grayImage.type() == CV_8UC1)
+	if (!flag)
 	{
-		//// Find max value
-		//for (int i = 0; i < grayImage.rows; ++i)
-		//	for (int j = 0; j < grayImage.cols; ++j)
-		//		maxvalue = maxvalue > grayImage.at<uchar>(i, j) ? maxvalue : grayImage.at<uchar>(i, j);
+		if (grayImage.type() == CV_8UC1)
+		{
+			//// Find max value
+			//for (int i = 0; i < grayImage.rows; ++i)
+			//	for (int j = 0; j < grayImage.cols; ++j)
+			//		maxvalue = maxvalue > grayImage.at<uchar>(i, j) ? maxvalue : grayImage.at<uchar>(i, j);
 
-		//linear stretch to 255
+			//linear stretch to 255
+			for (int i = 0; i < grayImage.rows; ++i)
+				for (int j = 0; j < grayImage.cols; ++j)
+					graybarImage.at<uchar>(i, j) = ((float)grayImage.at<uchar>(i, j) / maxvalue) * 255;
+		}
+		else if (grayImage.type() == CV_32FC1)
+		{
+			//// Find max value
+			//for (int i = 0; i < grayImage.rows; ++i)
+			//	for (int j = 0; j < grayImage.cols; ++j)
+			//		maxvalue = maxvalue > abs(grayImage.at<float>(i, j)) ? maxvalue : abs(grayImage.at<float>(i, j));
+
+			//linear stretch to 255
+			for (int i = 0; i < grayImage.rows; ++i)
+				for (int j = 0; j < grayImage.cols; ++j)
+					graybarImage.at<uchar>(i, j) = ((float)abs(grayImage.at<float>(i, j)) / maxvalue) * 255;
+		}
+		else if (grayImage.type() == CV_32FC2)
+		{
+			//// Find max value
+			//for (int i = 0; i < grayImage.rows; ++i)
+			//	for (int j = 0; j < grayImage.cols; ++j)
+			//	{
+			//		float fx = grayImage.at<Vec2f>(i, j)[0];
+			//		float fy = grayImage.at<Vec2f>(i, j)[1];
+			//		float absvalue = sqrt(fx * fx + fy * fy);
+			//		maxvalue = maxvalue > absvalue ? maxvalue : absvalue;
+			//	}
+
+			//linear stretch to 255
+			for (int i = 0; i < grayImage.rows; ++i)
+				for (int j = 0; j < grayImage.cols; ++j)
+				{
+					float fx = grayImage.at<Vec2f>(i, j)[0];
+					float fy = grayImage.at<Vec2f>(i, j)[1];
+					float absvalue = sqrt(fx * fx + fy * fy);
+					graybarImage.at<uchar>(i, j) = (absvalue / maxvalue) * 255;
+				}
+		}
+	}
+	else
+	{
+		float minvalue = 0;
+		// Find max value
 		for (int i = 0; i < grayImage.rows; ++i)
 			for (int j = 0; j < grayImage.cols; ++j)
-				graybarImage.at<uchar>(i, j) = ((float)grayImage.at<uchar>(i, j) / maxvalue) * 255;
-	}
-	else if (grayImage.type() == CV_32FC1)
-	{
-		//// Find max value
-		//for (int i = 0; i < grayImage.rows; ++i)
-		//	for (int j = 0; j < grayImage.cols; ++j)
-		//		maxvalue = maxvalue > abs(grayImage.at<float>(i, j)) ? maxvalue : abs(grayImage.at<float>(i, j));
+				minvalue = minvalue < grayImage.at<float>(i, j) ? minvalue : grayImage.at<float>(i, j);
 
-		//linear stretch to 255
+		for (int i = 0; i < grayImage.rows; ++i)
+			for (int j = 0; j < grayImage.cols; ++j)
+				grayImage.at<float>(i, j) = grayImage.at<float>(i, j) - minvalue;
+
 		for (int i = 0; i < grayImage.rows; ++i)
 			for (int j = 0; j < grayImage.cols; ++j)
 				graybarImage.at<uchar>(i, j) = ((float)abs(grayImage.at<float>(i, j)) / maxvalue) * 255;
 	}
-	else if (grayImage.type() == CV_32FC2)
-	{
-		//// Find max value
-		//for (int i = 0; i < grayImage.rows; ++i)
-		//	for (int j = 0; j < grayImage.cols; ++j)
-		//	{
-		//		float fx = grayImage.at<Vec2f>(i, j)[0];
-		//		float fy = grayImage.at<Vec2f>(i, j)[1];
-		//		float absvalue = sqrt(fx * fx + fy * fy);
-		//		maxvalue = maxvalue > absvalue ? maxvalue : absvalue;
-		//	}
-
-		//linear stretch to 255
-		for (int i = 0; i < grayImage.rows; ++i)
-			for (int j = 0; j < grayImage.cols; ++j)
-			{
-				float fx = grayImage.at<Vec2f>(i, j)[0];
-				float fy = grayImage.at<Vec2f>(i, j)[1];
-				float absvalue = sqrt(fx * fx + fy * fy);
-				graybarImage.at<uchar>(i, j) = (absvalue / maxvalue) * 255;
-			}
-	}
 }
 
 //將灰階圖像轉以紅藍色條顯示
-void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage)
+void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, bool flag)
 {
 	Mat grayImage;
 	Mat temp = _grayImage.getMat();
@@ -270,29 +289,65 @@ void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage)
 
 	int maxrad = 256;
 
-	if (grayImage.type() == CV_8UC1)
-		for (int i = 0; i < colorbarImage.rows; ++i)
-			for (int j = 0; j < colorbarImage.cols; ++j)
-			{
-				uchar *data = colorbarImage.data + colorbarImage.step[0] * i + colorbarImage.step[1] * j;
-
-				float fk = (1 - (float)grayImage.at<uchar>(i, j) / (float)maxrad) * (colorbar.size() - 1);  //計算灰度值對應之索引位置
-				int k0 = floor(fk);
-				int k1 = ceil(fk);
-				float f = fk - k0;
-
-				float col0 = 0.0f;
-				float col1 = 0.0f;
-				float col = 0.0f;
-				for (int b = 0; b < 3; b++)
+	if (!flag)
+	{
+		if (grayImage.type() == CV_8UC1)
+			for (int i = 0; i < colorbarImage.rows; ++i)
+				for (int j = 0; j < colorbarImage.cols; ++j)
 				{
-					col0 = colorbar[k0][b] / 255.0f;
-					col1 = colorbar[k1][b] / 255.0f;
-					col = (1 - f) * col0 + f * col1;
-					data[2 - b] = (int)(255.0f * col);
+					uchar *data = colorbarImage.data + colorbarImage.step[0] * i + colorbarImage.step[1] * j;
+
+					float fk = (1 - (float)grayImage.at<uchar>(i, j) / (float)maxrad) * (colorbar.size() - 1);  //計算灰度值對應之索引位置
+					int k0 = floor(fk);
+					int k1 = ceil(fk);
+					float f = fk - k0;
+
+					float col0 = 0.0f;
+					float col1 = 0.0f;
+					float col = 0.0f;
+					for (int b = 0; b < 3; b++)
+					{
+						col0 = colorbar[k0][b] / 255.0f;
+						col1 = colorbar[k1][b] / 255.0f;
+						col = (1 - f) * col0 + f * col1;
+						data[2 - b] = (int)(255.0f * col);
+					}
 				}
-			}
+		else
+			for (int i = 0; i < colorbarImage.rows; ++i)
+				for (int j = 0; j < colorbarImage.cols; ++j)
+				{
+					uchar *data = colorbarImage.data + colorbarImage.step[0] * i + colorbarImage.step[1] * j;
+
+					float fk = (1 - grayImage.at<float>(i, j) / (float)maxrad) * (colorbar.size() - 1);  //計算灰度值對應之索引位置
+					int k0 = floor(fk);
+					int k1 = ceil(fk);
+					float f = fk - k0;
+
+					float col0 = 0.0f;
+					float col1 = 0.0f;
+					float col = 0.0f;
+					for (int b = 0; b < 3; b++)
+					{
+						col0 = colorbar[k0][b] / 255.0f;
+						col1 = colorbar[k1][b] / 255.0f;
+						col = (1 - f) * col0 + f * col1;
+						data[2 - b] = (int)(255.0f * col);
+					}
+				}
+	}
 	else
+	{
+		float minvalue = 0;
+		// Find max value
+		for (int i = 0; i < grayImage.rows; ++i)
+			for (int j = 0; j < grayImage.cols; ++j)
+				minvalue = minvalue < grayImage.at<float>(i, j) ? minvalue : grayImage.at<float>(i, j);
+
+		for (int i = 0; i < grayImage.rows; ++i)
+			for (int j = 0; j < grayImage.cols; ++j)
+				grayImage.at<float>(i, j) = grayImage.at<float>(i, j) - minvalue;
+
 		for (int i = 0; i < colorbarImage.rows; ++i)
 			for (int j = 0; j < colorbarImage.cols; ++j)
 			{
@@ -314,6 +369,7 @@ void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage)
 					data[2 - b] = (int)(255.0f * col);
 				}
 			}
+	}
 }
 
 //將梯度圖像轉以色環方向顯示
