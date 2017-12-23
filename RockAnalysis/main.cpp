@@ -73,7 +73,7 @@ int main()
 	string grayBlur_R_file = filepath + "\\" + infilename + "_1.1_BLUR_I(R).png";			//模糊灰階影像(紅藍)
 	imwrite(grayBlur_R_file, grayBlur_R);
 
-	/*消除灰階影像區域亮度*/
+	/*去除區域亮度*/
 
 	Mat grayDIV;			//消除灰階影像區域亮度(8UC1)
 	DivideArea(gray, grayBlur, grayDIV);
@@ -94,22 +94,6 @@ int main()
 	string grayTH_B_file = filepath + "\\" + infilename + "_3.0_TH_I(B).png";			//二值化灰階影像(二值)
 	imwrite(grayTH_B_file, grayTH);
 
-	/*去除面白色雜訊*/
-
-	Mat areaCW;			//去除面白色雜訊(8UC1(BW))
-	ClearNoise(grayTH, areaCW, 5, 4, 1);
-
-	string areaCW_B_file = filepath + "\\" + infilename + "_4.0_CW_A(B).png";			//去除面白色雜訊(二值)
-	imwrite(areaCW_B_file, areaCW);
-
-	/*去除面黑色雜訊*/
-
-	Mat areaCB;			//去除面黑色雜訊(8UC1(BW))
-	ClearNoise(areaCW, areaCB, 5, 4, 0);
-
-	string areaCB_B_file = filepath + "\\" + infilename + "_5.0_CB_A(B).png";			//去除面黑色雜訊(二值)
-	imwrite(areaCB_B_file, areaCB);
-
 	/*基於面的切割結果*/
 
 	Mat area = grayTH;			//基於面的切割結果(8UC1(BW))
@@ -118,11 +102,11 @@ int main()
 	DrawLabel(area, area_L);
 	DrawImage(area, image, area_I);
 
-	string area_B_file = filepath + "\\" + infilename + "_6.0_AREA(B).png";			//基於面的切割結果(二值)
+	string area_B_file = filepath + "\\" + infilename + "_4.0_AREA(B).png";			//基於面的切割結果(二值)
 	imwrite(area_B_file, area);
-	string area_L_file = filepath + "\\" + infilename + "_6.1_AREA(L).png";			//基於面的切割結果(標籤)
+	string area_L_file = filepath + "\\" + infilename + "_4.1_AREA(L).png";			//基於面的切割結果(標籤)
 	imwrite(area_L_file, area_L);
-	string area_I_file = filepath + "\\" + infilename + "_6.2_AREA(I).png";			//基於面的切割結果(疊圖)
+	string area_I_file = filepath + "\\" + infilename + "_4.2_AREA(I).png";			//基於面的切割結果(疊圖)
 	imwrite(area_I_file, area_I);
 
 
@@ -147,17 +131,17 @@ int main()
 	DrawColorRing(gradd, gradd_C);
 	DrawColorRing(gradf, gradf_C);
 
-	string gradx_G_file = filepath + "\\" + infilename + "_7.0_GRAD_X(G).png";			//水平梯度(灰階)
+	string gradx_G_file = filepath + "\\" + infilename + "_5.0_GRAD_X(G).png";			//水平梯度(灰階)
 	imwrite(gradx_G_file, gradx_G);
-	string grady_G_file = filepath + "\\" + infilename + "_7.1_GRAD_Y(G).png";			//垂直梯度(灰階)
+	string grady_G_file = filepath + "\\" + infilename + "_5.1_GRAD_Y(G).png";			//垂直梯度(灰階)
 	imwrite(grady_G_file, grady_G);
-	string gradm_G_file = filepath + "\\" + infilename + "_7.2_GRAD_M(G).png";			//梯度幅值(灰階)
+	string gradm_G_file = filepath + "\\" + infilename + "_5.2_GRAD_M(G).png";			//梯度幅值(灰階)
 	imwrite(gradm_G_file, gradm_G);
-	string gradm_R_file = filepath + "\\" + infilename + "_7.3_GRAD_M(R).png";			//梯度幅值(紅藍)
+	string gradm_R_file = filepath + "\\" + infilename + "_5.3_GRAD_M(R).png";			//梯度幅值(紅藍)
 	imwrite(gradm_R_file, gradm_R);
-	string gradd_C_file = filepath + "\\" + infilename + "_7.4_GRAD_D(C).png";			//梯度方向(色環)
+	string gradd_C_file = filepath + "\\" + infilename + "_5.4_GRAD_D(C).png";			//梯度方向(色環)
 	imwrite(gradd_C_file, gradd_C);
-	string gradf_C_file = filepath + "\\" + infilename + "_7.5_GRAD_F(C).png";			//梯度場域(色環)
+	string gradf_C_file = filepath + "\\" + infilename + "_5.5_GRAD_F(C).png";			//梯度場域(色環)
 	imwrite(gradf_C_file, gradf_C);
 
 	/*模糊梯度幅值*/
@@ -168,9 +152,9 @@ int main()
 	Mat gradmBlur_R;			//輸出用(8UC3)
 	DrawColorBar(gradmBlur, gradmBlur_R);
 
-	string gradmBlur_G_file = filepath + "\\" + infilename + "_8.0_BLUR_M(G).png";			//模糊梯度幅值(灰階)
+	string gradmBlur_G_file = filepath + "\\" + infilename + "_6.0_BLUR_M(G).png";			//模糊梯度幅值(灰階)
 	imwrite(gradmBlur_G_file, gradmBlur);
-	string gradmBlur_R_file = filepath + "\\" + infilename + "_8.1_BLUR_R(G).png";			//模糊梯度幅值(紅藍)
+	string gradmBlur_R_file = filepath + "\\" + infilename + "_6.1_BLUR_R(G).png";			//模糊梯度幅值(紅藍)
 	imwrite(gradmBlur_R_file, gradmBlur_R);
 
 	/*消除梯度幅值區域亮度*/
@@ -182,9 +166,9 @@ int main()
 	DrawGrayBar(gradmDIV, gradmDIV_G);
 	DrawColorRing(gradmDIV, gradd, gradfDIV_C);
 
-	string gradmDIV_file = filepath + "\\" + infilename + "_9.0_DIV_M(G).png";			//消除梯度幅值區域亮度(灰階)
+	string gradmDIV_file = filepath + "\\" + infilename + "_7.0_DIV_M(G).png";			//消除梯度幅值區域亮度(灰階)
 	imwrite(gradmDIV_file, gradmDIV_G);
-	string gradfDIV_C_file = filepath + "\\" + infilename + "_9.1_DIV_F(C).png";		//消除梯度幅值區域亮度(色環)
+	string gradfDIV_C_file = filepath + "\\" + infilename + "_7.1_DIV_F(C).png";		//消除梯度幅值區域亮度(色環)
 	imwrite(gradfDIV_C_file, gradfDIV_C);
 
 	/*二值化梯度幅值*/
@@ -192,7 +176,7 @@ int main()
 	Mat gradmHT;			//二值化梯度幅值(8UC1(BW))
 	threshold(gradmDIV, gradmHT, 1, 255, THRESH_BINARY);
 
-	string gradmHT_B_file = filepath + "\\" + infilename + "_10.0_HT_M(B).png";			//二值化梯度幅值(二值)
+	string gradmHT_B_file = filepath + "\\" + infilename + "_8.0_HT_M(B).png";			//二值化梯度幅值(二值)
 	imwrite(gradmHT_B_file, gradmHT);
 
 	/*滯後切割線*/
@@ -200,16 +184,8 @@ int main()
 	Mat lineHC;			//滯後切割線(8UC1(BW))
 	HysteresisCut(gradmHT, area, lineHC);
 
-	string lineHC_B_file = filepath + "\\" + infilename + "_11.0_HC_L(B).png";			//滯後切割線(二值)
+	string lineHC_B_file = filepath + "\\" + infilename + "_9.0_HC_L(B).png";			//滯後切割線(二值)
 	imwrite(lineHC_B_file, lineHC);
-
-	/*去除線雜訊*/
-
-	Mat lineCN;			//去除線雜訊(8UC1(BW))
-	ClearNoise(lineHC, lineCN, 5, 4, 1);
-
-	string lineCN_B_file = filepath + "\\" + infilename + "_12.0_CN_L(B).png";			//去除線雜訊(二值)
-	imwrite(lineCN_B_file, lineCN);
 
 	/*基於線的切割結果*/
 
@@ -220,11 +196,11 @@ int main()
 	DrawLabel(line, line_L);
 	DrawImage(line, image, line_I);
 
-	string line_B_file = filepath + "\\" + infilename + "_13.0_LINE(B).png";			//基於線的切割結果(二值)
+	string line_B_file = filepath + "\\" + infilename + "_10.0_LINE(B).png";			//基於線的切割結果(二值)
 	imwrite(line_B_file, line);
-	string line_L_file = filepath + "\\" + infilename + "_13.1_LINE(L).png";			//基於線的切割結果(標籤)
+	string line_L_file = filepath + "\\" + infilename + "_10.1_LINE(L).png";			//基於線的切割結果(標籤)
 	imwrite(line_L_file, line_L);
-	string line_I_file = filepath + "\\" + infilename + "_13.2_LINE(I).png";			//基於線的切割結果(疊圖)
+	string line_I_file = filepath + "\\" + infilename + "_10.2_LINE(I).png";			//基於線的切割結果(疊圖)
 	imwrite(line_I_file, line_I);
 
 	/****結合面與線的萃取結果****/
@@ -238,11 +214,11 @@ int main()
 	DrawLabel(objectCOM, objectCOM_L);
 	DrawImage(objectCOM, image, objectCOM_I);
 
-	string  objectCOM_B_file = filepath + "\\" + infilename + "_14.0_COM_O(B).png";			//結合面與線(二值)
+	string  objectCOM_B_file = filepath + "\\" + infilename + "_11.0_COM_O(B).png";			//結合面與線(二值)
 	imwrite(objectCOM_B_file, objectCOM);
-	string  objectCOM_L_file = filepath + "\\" + infilename + "_14.1_COM_O(L).png";			//結合面與線(標籤)
+	string  objectCOM_L_file = filepath + "\\" + infilename + "_11.1_COM_O(L).png";			//結合面與線(標籤)
 	imwrite(objectCOM_L_file, objectCOM_L);
-	string  objectCOM_I_file = filepath + "\\" + infilename + "_14.2_COM_O(I).png";			//結合面與線(疊圖)
+	string  objectCOM_I_file = filepath + "\\" + infilename + "_11.2_COM_O(I).png";			//結合面與線(疊圖)
 	imwrite(objectCOM_I_file, objectCOM_I);
 
 	/*開運算*/
@@ -255,11 +231,11 @@ int main()
 	DrawLabel(objectOpen, objectOpen_L);
 	DrawImage(objectOpen, image, objectOpen_I);
 
-	string  objectOpen_B_file = filepath + "\\" + infilename + "_15.0_OPEN_O(B).png";			//開運算(二值)
+	string  objectOpen_B_file = filepath + "\\" + infilename + "_12.0_OPEN_O(B).png";			//開運算(二值)
 	imwrite(objectOpen_B_file, objectOpen);
-	string  objectOpen_L_file = filepath + "\\" + infilename + "_15.1_OPEN_O(L).png";			//開運算(標籤)
+	string  objectOpen_L_file = filepath + "\\" + infilename + "_12.1_OPEN_O(L).png";			//開運算(標籤)
 	imwrite(objectOpen_L_file, objectOpen_L);
-	string  objectOpen_I_file = filepath + "\\" + infilename + "_15.2_OPEN_O(I).png";			//開運算(疊圖)
+	string  objectOpen_I_file = filepath + "\\" + infilename + "_12.2_OPEN_O(I).png";			//開運算(疊圖)
 	imwrite(objectOpen_I_file, objectOpen_I);
 
 	/*距離轉換*/
@@ -271,9 +247,9 @@ int main()
 	DrawGrayBar(objectDT, objectDT_G);
 	DrawColorBar(objectDT, objectDT_R);
 
-	string objectDT_G_file = filepath + "\\" + infilename + "_16.0_DT_O(G).png";			//距離轉換(灰階)
+	string objectDT_G_file = filepath + "\\" + infilename + "_13.0_DT_O(G).png";			//距離轉換(灰階)
 	imwrite(objectDT_G_file, objectDT_G);
-	string objectDT_R_file = filepath + "\\" + infilename + "_16.1_DT_O(R).png";			//距離轉換(藍紅)
+	string objectDT_R_file = filepath + "\\" + infilename + "_13.1_DT_O(R).png";			//距離轉換(藍紅)
 	imwrite(objectDT_R_file, objectDT_R);
 
 	/*填補空洞*/
@@ -285,11 +261,11 @@ int main()
 	DrawLabel(objectFH, objectFH_L);
 	DrawImage(objectFH, image, objectFH_I);
 
-	string  objectFH_B_file = filepath + "\\" + infilename + "_17.0_FH_O(B).png";			//填補空洞(二值)
+	string  objectFH_B_file = filepath + "\\" + infilename + "_14.0_FH_O(B).png";			//填補空洞(二值)
 	imwrite(objectFH_B_file, objectFH);
-	string  objectFH_L_file = filepath + "\\" + infilename + "_17.1_FH_O(L).png";			//填補空洞(標籤)
+	string  objectFH_L_file = filepath + "\\" + infilename + "_14.1_FH_O(L).png";			//填補空洞(標籤)
 	imwrite(objectFH_L_file, objectFH_L);
-	string  objectFH_I_file = filepath + "\\" + infilename + "_17.2_FH_O(I).png";			//填補空洞(疊圖)
+	string  objectFH_I_file = filepath + "\\" + infilename + "_14.2_FH_O(I).png";			//填補空洞(疊圖)
 	imwrite(objectFH_I_file, objectFH_I);
 
 	/*求取擴展區域最小值*/
@@ -300,9 +276,9 @@ int main()
 	Mat objectEM_S;		//輸出用(8UC1)
 	DrawSeed(objectOpen, objectEM, objectEM_S);
 
-	string  objectEM_B_file = filepath + "\\" + infilename + "_18.0_EM_O(B).png";			//求取擴展區域最小值(二值)
+	string  objectEM_B_file = filepath + "\\" + infilename + "_15.0_EM_O(B).png";			//求取擴展區域最小值(二值)
 	imwrite(objectEM_B_file, objectEM);
-	string  objectEM_S_file = filepath + "\\" + infilename + "_18.1_EM_O(S).png";			//求取擴展區域最小值(種子)
+	string  objectEM_S_file = filepath + "\\" + infilename + "_15.1_EM_O(S).png";			//求取擴展區域最小值(種子)
 	imwrite(objectEM_S_file, objectEM_S);
 
 	/*增加未標記之標籤*/
@@ -313,9 +289,9 @@ int main()
 	Mat objectAL_S;		//輸出用(8UC1)
 	DrawSeed(objectOpen, objectAL, objectAL_S);
 
-	string  objectAL_B_file = filepath + "\\" + infilename + "_19.0_AL_O(B).png";			//增加未標記之標籤(二值)
+	string  objectAL_B_file = filepath + "\\" + infilename + "_16.0_AL_O(B).png";			//增加未標記之標籤(二值)
 	imwrite(objectAL_B_file, objectAL);
-	string  objectAL_S_file = filepath + "\\" + infilename + "_19.1_AL_O(S).png";			//增加未標記之標籤(種子)
+	string  objectAL_S_file = filepath + "\\" + infilename + "_16.1_AL_O(S).png";			//增加未標記之標籤(種子)
 	imwrite(objectAL_S_file, objectAL_S);
 
 	/*加深低窪區*/
@@ -327,9 +303,9 @@ int main()
 	DrawGrayBar(objectIM, objectIM_G);
 	DrawColorBar(objectIM, objectIM_R);
 
-	string objectIM_G_file = filepath + "\\" + infilename + "_20.0_IM_O(G).png";			//加深低窪區(灰階)
+	string objectIM_G_file = filepath + "\\" + infilename + "_17.0_IM_O(G).png";			//加深低窪區(灰階)
 	imwrite(objectIM_G_file, objectIM_G);
-	string objectIM_R_file = filepath + "\\" + infilename + "_20.1_IM_O(R).png";			//加深低窪區(藍紅)
+	string objectIM_R_file = filepath + "\\" + infilename + "_17.1_IM_O(R).png";			//加深低窪區(藍紅)
 	imwrite(objectIM_R_file, objectIM_R);
 
 	/*分水嶺演算法*/
@@ -341,11 +317,11 @@ int main()
 	DrawLabel(objectWT, objectWT_L);
 	DrawImage(objectWT, image, objectWT_I);
 
-	string  objectWT_B_file = filepath + "\\" + infilename + "_21.0_WT_O(B).png";			//分水嶺演算法(二值)
+	string  objectWT_B_file = filepath + "\\" + infilename + "_18.0_WT_O(B).png";			//分水嶺演算法(二值)
 	imwrite(objectWT_B_file, objectWT);
-	string  objectWT_L_file = filepath + "\\" + infilename + "_21.1_WT_O(L).png";			//分水嶺演算法(標籤)
+	string  objectWT_L_file = filepath + "\\" + infilename + "_18.1_WT_O(L).png";			//分水嶺演算法(標籤)
 	imwrite(objectWT_L_file, objectWT_L);
-	string  objectWT_I_file = filepath + "\\" + infilename + "_21.2_WT_O(I).png";			//分水嶺演算法(疊圖)
+	string  objectWT_I_file = filepath + "\\" + infilename + "_18.2_WT_O(I).png";			//分水嶺演算法(疊圖)
 	imwrite(objectWT_I_file, objectWT_I);
 
 	///*距離轉換2*/

@@ -51,18 +51,18 @@ void DrawColorRing(InputArray _gradm, InputArray _gradd, OutputArray _colorringI
 void DrawColorRing(InputArray _gradf, OutputArray _colorringImage);
 
 //將二值圖像轉以標籤顯示
-//bwImage : 二值圖像(8UC1)
+//bwImage : 二值圖像(8UC1(BW))
 //labelImage : 標籤圖像(8UC3)
 void DrawLabel(InputArray _bwImage, OutputArray _labelImage);
 
 //將二值圖像結合原始影像轉以疊合圖像顯示
-//bwImage : 二值圖像(8UC1)
+//bwImage : 二值圖像(8UC1(BW))
 //image : 原始影像(8UC1/8UC3)
 //combineImage : 疊合圖像(8UC3)
 void DrawImage(InputArray _bwImage, InputArray _image, OutputArray _combineImage);
 
 //將種子點結合原物件轉以疊合圖像顯示
-//object : 原始物件(8UC1)
-//objectSeed : 種子物件(8UC1)
+//object : 原始物件(8UC1(BW))
+//objectSeed : 種子物件(8UC1(BW))
 //combineImage : 疊合圖像(8UC1)
 void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineImae);

@@ -1,7 +1,7 @@
 #include "output_function.h"
 #include "line_function.h"
 
-/*中央差分*/
+//以中央差分計算灰階影像梯度
 void Differential(InputArray _grayImage, OutputArray _gradx, OutputArray _grady) {
 
 	Mat grayImage = _grayImage.getMat();
@@ -22,7 +22,7 @@ void Differential(InputArray _grayImage, OutputArray _gradx, OutputArray _grady)
 		}
 }
 
-/*結合水平及垂直方向梯度為梯度場*/
+//結合水平及垂直方向梯度為梯度場域
 void GradientField(InputArray _gradx, InputArray _grady, OutputArray _gradf) {
 
 	Mat gradx = _gradx.getMat();
@@ -43,7 +43,7 @@ void GradientField(InputArray _gradx, InputArray _grady, OutputArray _gradf) {
 
 }
 
-/*計算梯度幅值及方向*/
+//以梯度場域計算梯度幅值及方向
 void CalculateGradient(InputArray _gradf, OutputArray _gradm, OutputArray _gradd)
 {
 	Mat gradf = _gradf.getMat();
@@ -67,7 +67,7 @@ void CalculateGradient(InputArray _gradf, OutputArray _gradm, OutputArray _gradd
 		}
 }
 
-/*基於線的分割混合模式*/
+//去除梯度幅值區域亮度
 void DivideLine(InputArray _gradm, InputArray _gradmblur, OutputArray _gradmDivide)
 {
 	Mat gradm = _gradm.getMat();
@@ -84,29 +84,29 @@ void DivideLine(InputArray _gradm, InputArray _gradmblur, OutputArray _gradmDivi
 			gradmDivide.at<uchar>(i, j) = ((double)gradmblur.at<uchar>(i, j) / (double)gradm.at<uchar>(i, j) >= 1 || gradm.at<uchar>(i, j) == 0 || gradmblur.at<uchar>(i, j) == 0) ? 0 : (1 - (double)gradmblur.at<uchar>(i, j) / (double)gradm.at<uchar>(i, j)) * 255;
 }
 
-/*滯後切割*/
-void HysteresisCut(InputArray _lineHT, InputArray _area, OutputArray _lineHC)
+//利用面滯後切割線
+void HysteresisCut(InputArray _gradm, InputArray _area, OutputArray _line)
 {
-	Mat lineHT = _lineHT.getMat();
-	CV_Assert(lineHT.type() == CV_8UC1);
+	Mat gradm = _gradm.getMat();
+	CV_Assert(gradm.type() == CV_8UC1);
 
 	Mat area = _area.getMat();
 	CV_Assert(area.type() == CV_8UC1);
 
-	_lineHC.create(lineHT.size(), CV_8UC1);
-	Mat lineHC = _lineHC.getMat();
+	_line.create(gradm.size(), CV_8UC1);
+	Mat line = _line.getMat();
 
-	Mat UT(lineHT.size(), CV_8UC1, Scalar(0));		//上閥值
+	Mat UT(gradm.size(), CV_8UC1, Scalar(0));		//上閥值
 
-	for (int i = 0; i < lineHT.rows; ++i)
-		for (int j = 0; j < lineHT.cols; ++j)
-			if (area.at<uchar>(i, j) == 0 && lineHT.at<uchar>(i, j) == 255)
+	for (int i = 0; i < gradm.rows; ++i)
+		for (int j = 0; j < gradm.cols; ++j)
+			if (area.at<uchar>(i, j) == 0 && gradm.at<uchar>(i, j) == 255)
 				UT.at<uchar>(i, j) = 255;
 
-	Mat MT(lineHT.size(), CV_8UC1, Scalar(0));	//中閥值
-	for (int i = 0; i < lineHT.rows; ++i)
-		for (int j = 0; j < lineHT.cols; ++j)
-			if (area.at<uchar>(i, j) == 255 && lineHT.at<uchar>(i, j) == 255)
+	Mat MT(gradm.size(), CV_8UC1, Scalar(0));	//中閥值
+	for (int i = 0; i < gradm.rows; ++i)
+		for (int j = 0; j < gradm.cols; ++j)
+			if (area.at<uchar>(i, j) == 255 && gradm.at<uchar>(i, j) == 255)
 				MT.at<uchar>(i, j) = 255;
 
 	Mat labelImg;
@@ -115,8 +115,8 @@ void HysteresisCut(InputArray _lineHT, InputArray _area, OutputArray _lineHC)
 	int* labeltable = new int[labelNum];		// initialize label table with zero  
 	memset(labeltable, 0, labelNum * sizeof(int));
 
-	for (int i = 0; i < lineHT.rows; ++i)
-		for (int j = 0; j < lineHT.cols; ++j)
+	for (int i = 0; i < gradm.rows; ++i)
+		for (int j = 0; j < gradm.cols; ++j)
 		{
 			//+ - + - + - +
 			//| B | C | D |
@@ -134,22 +134,22 @@ void HysteresisCut(InputArray _lineHT, InputArray _area, OutputArray _lineHC)
 			if (i == 0) { C = 0; }
 			else { C = UT.at<uchar>(i - 1, j); }
 
-			if (i == 0 || j == lineHT.cols - 1) { D = 0; }
+			if (i == 0 || j == gradm.cols - 1) { D = 0; }
 			else { D = UT.at<uchar>(i - 1, j + 1); }
 
 			if (j == 0) { E = 0; }
 			else { E = UT.at<uchar>(i, j - 1); }
 
-			if (j == lineHT.cols - 1) { F = 0; }
+			if (j == gradm.cols - 1) { F = 0; }
 			else { F = UT.at<uchar>(i, j + 1); }
 
-			if (i == lineHT.rows - 1 || j == 0) { G = 0; }
+			if (i == gradm.rows - 1 || j == 0) { G = 0; }
 			else { G = UT.at<uchar>(i + 1, j - 1); }
 
-			if (i == lineHT.rows - 1) { H = 0; }
+			if (i == gradm.rows - 1) { H = 0; }
 			else { H = UT.at<uchar>(i + 1, j); }
 
-			if (i == lineHT.rows - 1 || j == lineHT.cols - 1) { I = 0; }
+			if (i == gradm.rows - 1 || j == gradm.cols - 1) { I = 0; }
 			else { I = UT.at<uchar>(i + 1, j + 1); }
 
 			// apply 8 connectedness  
@@ -161,15 +161,15 @@ void HysteresisCut(InputArray _lineHT, InputArray _area, OutputArray _lineHC)
 
 	labeltable[0] = 0;		//clear 0 label
 
-	Mat mask(lineHT.size(), CV_8UC1, Scalar(0));
+	Mat mask(gradm.size(), CV_8UC1, Scalar(0));
 	for (int i = 0; i < labelImg.rows; i++)
 		for (int j = 0; j < labelImg.cols; j++)
 			if (labeltable[labelImg.at<int>(i, j)] > 0 || UT.at<uchar>(i, j) == 255) { mask.at<uchar>(i, j) = 255; }
 	delete[] labeltable;
 	labeltable = nullptr;
 
-	for (int i = 0; i < lineHT.rows; ++i)
-		for (int j = 0; j < lineHT.cols; ++j)
-			if (mask.at<uchar>(i, j) == 255) { lineHC.at<uchar>(i, j) = 255; }
-			else { lineHC.at<uchar>(i, j) = 0; }
+	for (int i = 0; i < gradm.rows; ++i)
+		for (int j = 0; j < gradm.cols; ++j)
+			if (mask.at<uchar>(i, j) == 255) { line.at<uchar>(i, j) = 255; }
+			else { line.at<uchar>(i, j) = 0; }
 }

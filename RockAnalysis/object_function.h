@@ -85,3 +85,6 @@ void BWReverse(InputArray _bwImage, OutputArray _bwImageR);
 
 /*空洞填補*/
 void BWFillhole(InputArray _bwImage, OutputArray _bwFillhole);
+
+//去除雜訊
+void ClearNoise(InputArray _binaryImg, OutputArray _clearAreaImage, int noise, int nears = 4, bool BW = 0);
