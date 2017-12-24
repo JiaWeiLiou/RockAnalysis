@@ -378,9 +378,7 @@ int main()
 	Mat objectEM_S;		//輸出用(8UC1)
 	DrawSeed(objectFH, objectEM, objectEM_S);
 
-	string  objectEM_B_file = filepath + "\\" + infilename + "_15.0_EM_O(B).png";			//求取擴展區域最小值(二值)
-	imwrite(objectEM_B_file, objectEM);
-	string  objectEM_S_file = filepath + "\\" + infilename + "_15.1_EM_O(S).png";			//求取擴展區域最小值(種子)
+	string  objectEM_S_file = filepath + "\\" + infilename + "_15.0_EM_O(S).png";			//求取擴展區域最小值(種子)
 	imwrite(objectEM_S_file, objectEM_S);
 
 
@@ -392,9 +390,7 @@ int main()
 	Mat objectAL_S;		//輸出用(8UC1)
 	DrawSeed(objectFH, objectAL, objectAL_S);
 
-	string  objectAL_B_file = filepath + "\\" + infilename + "_16.0_AL_O(B).png";			//增加未標記之標籤(二值)
-	imwrite(objectAL_B_file, objectAL);
-	string  objectAL_S_file = filepath + "\\" + infilename + "_16.1_AL_O(S).png";			//增加未標記之標籤(種子)
+	string  objectAL_S_file = filepath + "\\" + infilename + "_16.0_AL_O(S).png";			//增加未標記之標籤(種子)
 	imwrite(objectAL_S_file, objectAL_S);
 
 	/*加深低窪區*/
@@ -402,14 +398,11 @@ int main()
 	Mat objectIM;		//加深低窪區(3FC1(BW))
 	ImposeMinima(objectDT, objectAL, objectIM);
 
-	Mat objectIM_G, objectIM_R;		//輸出用(8UC1、8UC3)
-	DrawGrayBar(objectIM, objectIM_G);
-	DrawColorBar(objectIM, objectIM_R);
+	Mat objectIM_G;		//輸出用(8UC1)
+	DrawGrayBar(objectIM, objectIM_G, 1);
 
 	string objectIM_G_file = filepath + "\\" + infilename + "_17.0_IM_O(G).png";			//加深低窪區(灰階)
 	imwrite(objectIM_G_file, objectIM_G);
-	string objectIM_R_file = filepath + "\\" + infilename + "_17.1_IM_O(R).png";			//加深低窪區(藍紅)
-	imwrite(objectIM_R_file, objectIM_R);
 
 	/*分水嶺演算法*/
 

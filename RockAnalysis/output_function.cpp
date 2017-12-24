@@ -267,6 +267,8 @@ void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage, bool flag)
 			for (int j = 0; j < grayImage.cols; ++j)
 				grayImage.at<float>(i, j) = grayImage.at<float>(i, j) - minvalue;
 
+		maxvalue = -minvalue;
+
 		for (int i = 0; i < grayImage.rows; ++i)
 			for (int j = 0; j < grayImage.cols; ++j)
 				graybarImage.at<uchar>(i, j) = ((float)abs(grayImage.at<float>(i, j)) / maxvalue) * 255;

@@ -409,6 +409,7 @@ void ImposeMinima(InputArray _objectDT, InputArray _objectAL, OutputArray _objec
 			if (objectDT.at<float>(i, j) < min) { min = objectDT.at<float>(i, j); }
 		}
 
+	min = min - 10;
 	objectDT.copyTo(objectIM);
 			
 	for (int i = 0; i < objectDT.rows; ++i)
