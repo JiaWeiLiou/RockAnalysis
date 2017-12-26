@@ -328,16 +328,13 @@ bool CheckIfPixelIsWatershed(int x, int y, Mat &label, Point2i &inLabeledNeighbo
 }
 
 /*擴展區域最小值*/
-void ExtendLocalMinimaDetection(InputArray _objectFH, OutputArray _objectEM, float H)
+void ExtendLocalMinimaDetection(InputArray _objectDT, OutputArray _objectEM, float H)
 {
-	Mat objectFH = _objectFH.getMat();
-	CV_Assert(objectFH.type() == CV_8UC1);
+	Mat objectDT = _objectDT.getMat();
+	CV_Assert(objectDT.type() == CV_32FC1);
 
-	_objectEM.create(objectFH.size(), CV_8UC1);
+	_objectEM.create(objectDT.size(), CV_8UC1);
 	Mat objectEM = _objectEM.getMat();
-
-	Mat objectDT;		//距離轉換(32FC1(BW))
-	distanceTransform(objectFH, objectDT, CV_DIST_L2, 3);
 
 	Mat objectHMT;
 	HMinimaTransform(objectDT, objectHMT, H);
@@ -691,4 +688,21 @@ void ClearNoise(InputArray _bwImage, OutputArray _clearAreaImage, int noise, int
 							else { clearAreaImage.at<uchar>(i, j) = 255; }
 						}
 				}
+}
+
+//疊加灰階影像
+void AddGray(InputArray _objectDT, InputArray _gray, OutputArray _objectAG)
+{
+	Mat objectDT = _objectDT.getMat();
+	CV_Assert(objectDT.type() == CV_32FC1);
+
+	Mat gray = _gray.getMat();
+	CV_Assert(gray.type() == CV_8UC1);
+
+	_objectAG.create(objectDT.size(), CV_32FC1);
+	Mat objectAG = _objectAG.getMat();
+
+	for (int i = 0; i < objectDT.rows; ++i)
+		for (int j = 0; j < objectDT.cols; ++j)
+			objectAG.at<float>(i, j) = objectDT.at<float>(i, j) + gray.at<uchar>(i, j);
 }

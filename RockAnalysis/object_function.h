@@ -88,3 +88,6 @@ void BWFillhole(InputArray _bwImage, OutputArray _bwFillhole);
 
 //去除雜訊
 void ClearNoise(InputArray _binaryImg, OutputArray _clearAreaImage, int noise, int nears = 4, bool BW = 0);
+
+//疊加灰階影像
+void AddGray(InputArray _objectDT, InputArray _gray, OutputArray _objectAG);

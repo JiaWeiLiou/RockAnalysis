@@ -256,103 +256,6 @@ int main()
 	string  objectOpen_I_file = filepath + "\\" + infilename + "_12.2_OPEN_O(I).png";			//開運算(疊圖)
 	imwrite(objectOpen_I_file, objectOpen_I);
 
-	///*距離轉換*/
-
-	//Mat objectDT;		//距離轉換(32FC1(BW))
-	//distanceTransform(objectOpen, objectDT, CV_DIST_L2, 3);
-
-	//Mat objectDT_G, objectDT_R;		//輸出用(8UC1、8UC3)
-	//DrawGrayBar(objectDT, objectDT_G);
-	//DrawColorBar(objectDT, objectDT_R);
-
-	//string objectDT_G_file = filepath + "\\" + infilename + "_13.0_DT_O(G).png";			//距離轉換(灰階)
-	//imwrite(objectDT_G_file, objectDT_G);
-	//string objectDT_R_file = filepath + "\\" + infilename + "_13.1_DT_O(R).png";			//距離轉換(藍紅)
-	//imwrite(objectDT_R_file, objectDT_R);
-
-	///*填補空洞*/
-
-	//Mat objectFH;			//填補空洞(8UC1(BW))
-	//BWFillhole(objectOpen, objectFH);
-
-	//Mat objectFH_L, objectFH_I;			//輸出用(8UC3、8UC3)
-	//DrawLabel(objectFH, objectFH_L);
-	//DrawImage(objectFH, image, objectFH_I);
-
-	//string  objectFH_B_file = filepath + "\\" + infilename + "_14.0_FH_O(B).png";			//填補空洞(二值)
-	//imwrite(objectFH_B_file, objectFH);
-	//string  objectFH_L_file = filepath + "\\" + infilename + "_14.1_FH_O(L).png";			//填補空洞(標籤)
-	//imwrite(objectFH_L_file, objectFH_L);
-	//string  objectFH_I_file = filepath + "\\" + infilename + "_14.2_FH_O(I).png";			//填補空洞(疊圖)
-	//imwrite(objectFH_I_file, objectFH_I);
-
-	///*侵蝕運算*/
-
-	//Mat objectErode;		//侵蝕運算(8UC1(BW))
-	//Mat elementE = getStructuringElement(MORPH_ELLIPSE, Size(erodeSize, erodeSize));
-	//morphologyEx(objectFH, objectErode, MORPH_ERODE, elementE);
-
-	//Mat objectErode_S;		//輸出用(8UC1)
-	//DrawSeed(objectFH, objectErode, objectErode_S);
-
-	//string  objectErode_S_file = filepath + "\\" + infilename + "_15.0_ERODE_O(S).png";			//侵蝕運算(種子)
-	//imwrite(objectErode_S_file, objectErode_S);
-
-	///*增加未標記之標籤*/
-
-	//Mat objectAL;		//增加未標記之標籤(8UC1(BW))
-	//AddLabel(objectOpen, objectErode, objectAL);
-
-	//Mat objectAL_S;		//輸出用(8UC1)
-	//DrawSeed(objectOpen, objectAL, objectAL_S);
-
-	//string  objectAL_S_file = filepath + "\\" + infilename + "_16.0_AL_O(S).png";			//增加未標記之標籤(種子)
-	//imwrite(objectAL_S_file, objectAL_S);
-
-	///*加深低窪區*/
-
-	//Mat objectIM;		//加深低窪區(32FC1(BW))
-	//ImposeMinima(objectDT, objectAL, objectIM);
-
-	//Mat objectIM_G, objectIM_R;		//輸出用(8UC1、8UC3)
-	//DrawGrayBar(objectIM, objectIM_G, 1);
-	//DrawColorBar(objectIM, objectIM_R,11);
-
-	//string objectIM_G_file = filepath + "\\" + infilename + "_17.0_IM_O(G).png";			//加深低窪區(灰階)
-	//imwrite(objectIM_G_file, objectIM_G);
-	//string objectIM_R_file = filepath + "\\" + infilename + "_17.1_IM_O(R).png";			//加深低窪區(藍紅)
-	//imwrite(objectIM_R_file, objectIM_R);
-
-	///*分水嶺演算法*/
-
-	//Mat objectWT;		//分水嶺演算法(32SC1(BW))
-	//WatershedTransform(objectOpen, objectIM, objectWT);
-
-	//Mat objectWT_L, objectWT_I;		//輸出用(8UC3、8UC3)
-	//DrawLabel(objectWT, objectWT_L);
-	//DrawImage(objectWT, image, objectWT_I);
-
-	//string  objectWT_B_file = filepath + "\\" + infilename + "_18.0_WT_O(B).png";			//分水嶺演算法(二值)
-	//imwrite(objectWT_B_file, objectWT);
-	//string  objectWT_L_file = filepath + "\\" + infilename + "_18.1_WT_O(L).png";			//分水嶺演算法(標籤)
-	//imwrite(objectWT_L_file, objectWT_L);
-	//string  objectWT_I_file = filepath + "\\" + infilename + "_18.2_WT_O(I).png";			//分水嶺演算法(疊圖)
-	//imwrite(objectWT_I_file, objectWT_I);
-
-	/*距離轉換*/
-
-	Mat objectDT;		//距離轉換(3FC1(BW))
-	distanceTransform(objectOpen, objectDT, CV_DIST_L2, 3);
-
-	Mat objectDT_G, objectDT_R;		//輸出用(8UC1、8UC3)
-	DrawGrayBar(objectDT, objectDT_G);
-	DrawColorBar(objectDT, objectDT_R);
-
-	string objectDT_G_file = filepath + "\\" + infilename + "_13.0_DT_O(G).png";			//距離轉換(灰階)
-	imwrite(objectDT_G_file, objectDT_G);
-	string objectDT_R_file = filepath + "\\" + infilename + "_13.1_DT_O(R).png";			//距離轉換(藍紅)
-	imwrite(objectDT_R_file, objectDT_R);
-
 	/*填補空洞*/
 
 	Mat objectFH;			//填補空洞(8UC1(BW))
@@ -363,24 +266,51 @@ int main()
 	DrawLabel(objectFH, objectFH_L);
 	DrawImage(objectFH, image, objectFH_I);
 
-	string  objectFH_B_file = filepath + "\\" + infilename + "_14.0_FH_O(B).png";			//填補空洞(二值)
+	string  objectFH_B_file = filepath + "\\" + infilename + "_13.0_FH_O(B).png";			//填補空洞(二值)
 	imwrite(objectFH_B_file, objectFH);
-	string  objectFH_L_file = filepath + "\\" + infilename + "_14.1_FH_O(L).png";			//填補空洞(標籤)
+	string  objectFH_L_file = filepath + "\\" + infilename + "_13.1_FH_O(L).png";			//填補空洞(標籤)
 	imwrite(objectFH_L_file, objectFH_L);
-	string  objectFH_I_file = filepath + "\\" + infilename + "_14._FH_O(I).png";			//填補空洞(疊圖)
+	string  objectFH_I_file = filepath + "\\" + infilename + "_13._FH_O(I).png";			//填補空洞(疊圖)
 	imwrite(objectFH_I_file, objectFH_I);
+
+	/*距離轉換*/
+
+	Mat objectDT;		//距離轉換(32FC1)
+	distanceTransform(objectFH, objectDT, CV_DIST_L2, 3);
+
+	Mat objectDT_G, objectDT_R;		//輸出用(8UC1、8UC3)
+	DrawGrayBar(objectDT, objectDT_G);
+	DrawColorBar(objectDT, objectDT_R);
+
+	string objectDT_G_file = filepath + "\\" + infilename + "_14.0_DT_O(G).png";			//距離轉換(灰階)
+	imwrite(objectDT_G_file, objectDT_G);
+	string objectDT_R_file = filepath + "\\" + infilename + "_14.1_DT_O(R).png";			//距離轉換(藍紅)
+	imwrite(objectDT_R_file, objectDT_R);
+
+	///*結合灰度圖像*/
+
+	//Mat objectAG;		//結合灰度圖像(32FC1)
+	//AddGray(objectDT, grayDIV, objectAG);
+
+	//Mat objectAG_G, objectAG_R;		//輸出用(8UC1、8UC3)
+	//DrawGrayBar(objectAG, objectAG_G);
+	//DrawColorBar(objectAG, objectAG_R);
+
+	//string objectAG_G_file = filepath + "\\" + infilename + "_15.0_AG_O(G).png";			//結合灰度圖像(灰階)
+	//imwrite(objectAG_G_file, objectAG_G);
+	//string objectAG_R_file = filepath + "\\" + infilename + "_15.1_AG_O(R).png";			//結合灰度圖像(藍紅)
+	//imwrite(objectAG_R_file, objectAG_R);
 
 	/*求取擴展區域最小值*/
 
 	Mat objectEM;		//求取擴展區域最小值(8UC1(BW))
-	ExtendLocalMinimaDetection(objectFH, objectEM, 5);
+	ExtendLocalMinimaDetection(objectDT, objectEM, H0);
 
 	Mat objectEM_S;		//輸出用(8UC1)
 	DrawSeed(objectFH, objectEM, objectEM_S);
 
-	string  objectEM_S_file = filepath + "\\" + infilename + "_15.0_EM_O(S).png";			//求取擴展區域最小值(種子)
+	string  objectEM_S_file = filepath + "\\" + infilename + "_16.0_EM_O(S).png";			//求取擴展區域最小值(種子)
 	imwrite(objectEM_S_file, objectEM_S);
-
 
 	/*增加未標記之標籤*/
 
@@ -390,7 +320,7 @@ int main()
 	Mat objectAL_S;		//輸出用(8UC1)
 	DrawSeed(objectFH, objectAL, objectAL_S);
 
-	string  objectAL_S_file = filepath + "\\" + infilename + "_16.0_AL_O(S).png";			//增加未標記之標籤(種子)
+	string  objectAL_S_file = filepath + "\\" + infilename + "_17.0_AL_O(S).png";			//增加未標記之標籤(種子)
 	imwrite(objectAL_S_file, objectAL_S);
 
 	/*加深低窪區*/
@@ -401,7 +331,7 @@ int main()
 	Mat objectIM_G;		//輸出用(8UC1)
 	DrawGrayBar(objectIM, objectIM_G, 1);
 
-	string objectIM_G_file = filepath + "\\" + infilename + "_17.0_IM_O(G).png";			//加深低窪區(灰階)
+	string objectIM_G_file = filepath + "\\" + infilename + "_18.0_IM_O(G).png";			//加深低窪區(灰階)
 	imwrite(objectIM_G_file, objectIM_G);
 
 	/*分水嶺演算法*/
@@ -413,11 +343,11 @@ int main()
 	DrawLabel(objectWT, objectWT_L);
 	DrawImage(objectWT, image, objectWT_I);
 
-	string  objectWT_B_file = filepath + "\\" + infilename + "_18.0_WT_O(B).png";			//分水嶺演算法(二值)
+	string  objectWT_B_file = filepath + "\\" + infilename + "_19.0_WT_O(B).png";			//分水嶺演算法(二值)
 	imwrite(objectWT_B_file, objectWT);
-	string  objectWT_L_file = filepath + "\\" + infilename + "_18.1_WT_O(L).png";			//分水嶺演算法(標籤)
+	string  objectWT_L_file = filepath + "\\" + infilename + "_19.1_WT_O(L).png";			//分水嶺演算法(標籤)
 	imwrite(objectWT_L_file, objectWT_L);
-	string  objectWT_I_file = filepath + "\\" + infilename + "_18._WT_O(I).png";			//分水嶺演算法(疊圖)
+	string  objectWT_I_file = filepath + "\\" + infilename + "_19._WT_O(I).png";			//分水嶺演算法(疊圖)
 	imwrite(objectWT_I_file, objectWT_I);
 
 	return 0;
