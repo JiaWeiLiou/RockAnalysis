@@ -210,10 +210,10 @@ void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage, bool flag)
 	{
 		if (grayImage.type() == CV_8UC1)
 		{
-			//// Find max value
-			//for (int i = 0; i < grayImage.rows; ++i)
-			//	for (int j = 0; j < grayImage.cols; ++j)
-			//		maxvalue = maxvalue > grayImage.at<uchar>(i, j) ? maxvalue : grayImage.at<uchar>(i, j);
+			// Find max value
+			for (int i = 0; i < grayImage.rows; ++i)
+				for (int j = 0; j < grayImage.cols; ++j)
+					maxvalue = maxvalue > grayImage.at<uchar>(i, j) ? maxvalue : grayImage.at<uchar>(i, j);
 
 			//linear stretch to 255
 			for (int i = 0; i < grayImage.rows; ++i)
@@ -222,10 +222,10 @@ void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage, bool flag)
 		}
 		else if (grayImage.type() == CV_32FC1)
 		{
-			//// Find max value
-			//for (int i = 0; i < grayImage.rows; ++i)
-			//	for (int j = 0; j < grayImage.cols; ++j)
-			//		maxvalue = maxvalue > abs(grayImage.at<float>(i, j)) ? maxvalue : abs(grayImage.at<float>(i, j));
+			// Find max value
+			for (int i = 0; i < grayImage.rows; ++i)
+				for (int j = 0; j < grayImage.cols; ++j)
+					maxvalue = maxvalue > abs(grayImage.at<float>(i, j)) ? maxvalue : abs(grayImage.at<float>(i, j));
 
 			//linear stretch to 255
 			for (int i = 0; i < grayImage.rows; ++i)
@@ -235,14 +235,14 @@ void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage, bool flag)
 		else if (grayImage.type() == CV_32FC2)
 		{
 			//// Find max value
-			//for (int i = 0; i < grayImage.rows; ++i)
-			//	for (int j = 0; j < grayImage.cols; ++j)
-			//	{
-			//		float fx = grayImage.at<Vec2f>(i, j)[0];
-			//		float fy = grayImage.at<Vec2f>(i, j)[1];
-			//		float absvalue = sqrt(fx * fx + fy * fy);
-			//		maxvalue = maxvalue > absvalue ? maxvalue : absvalue;
-			//	}
+			for (int i = 0; i < grayImage.rows; ++i)
+				for (int j = 0; j < grayImage.cols; ++j)
+				{
+					float fx = grayImage.at<Vec2f>(i, j)[0];
+					float fy = grayImage.at<Vec2f>(i, j)[1];
+					float absvalue = sqrt(fx * fx + fy * fy);
+					maxvalue = maxvalue > absvalue ? maxvalue : absvalue;
+				}
 
 			//linear stretch to 255
 			for (int i = 0; i < grayImage.rows; ++i)
@@ -294,6 +294,10 @@ void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, bool flag)
 	if (!flag)
 	{
 		if (grayImage.type() == CV_8UC1)
+		{
+			for (int i = 0; i < grayImage.rows; ++i)
+				for (int j = 0; j < grayImage.cols; ++j)
+					maxrad = maxrad > grayImage.at<uchar>(i, j) ? maxrad : grayImage.at<uchar>(i, j);
 			for (int i = 0; i < colorbarImage.rows; ++i)
 				for (int j = 0; j < colorbarImage.cols; ++j)
 				{
@@ -315,7 +319,12 @@ void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, bool flag)
 						data[2 - b] = (int)(255.0f * col);
 					}
 				}
+		}
 		else
+		{
+			for (int i = 0; i < grayImage.rows; ++i)
+				for (int j = 0; j < grayImage.cols; ++j)
+					maxrad = maxrad > grayImage.at<float>(i, j) ? maxrad : grayImage.at<float>(i, j);
 			for (int i = 0; i < colorbarImage.rows; ++i)
 				for (int j = 0; j < colorbarImage.cols; ++j)
 				{
@@ -337,6 +346,7 @@ void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, bool flag)
 						data[2 - b] = (int)(255.0f * col);
 					}
 				}
+		}
 	}
 	else
 	{
