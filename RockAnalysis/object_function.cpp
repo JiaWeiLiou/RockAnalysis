@@ -367,8 +367,7 @@ void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL)
 	Mat labels;
 	int num = bwlabel(object, labels, 8) + 1;	//include label 0
 
-	int *labeltable = new int[num];  
-	memset(labeltable, 0, num * sizeof(int));
+	int *labeltable = new int[num]();  
 
 	for (int i = 0; i < object.rows; ++i)
 		for (int j = 0; j < object.cols; ++j)
@@ -559,8 +558,7 @@ void ClearNoise(InputArray _bwImage, OutputArray _clearAreaImage, int noise, int
 
 	int nobj = 0;    // number of objects found in image  
 
-	int *labeltable = new int[bwImage.rows*bwImage.cols];		// initialize label table with zero  
-	memset(labeltable, 0, bwImage.rows*bwImage.cols * sizeof(int));
+	int *labeltable = new int[bwImage.rows*bwImage.cols]();		// initialize label table with zero  
 	int ntable = 0;
 
 	//	labeling scheme

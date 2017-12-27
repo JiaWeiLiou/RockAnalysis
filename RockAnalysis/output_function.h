@@ -29,23 +29,15 @@ void makecolorwheel(vector<Scalar> &colorwheel);
 //colorbar : 色條索引值
 void makecolorbar(vector<Scalar> &colorbar);
 
-//將灰階圖像轉以灰階色條顯示
+//將灰階圖像轉以灰階色條顯示並自動拉伸
 //grayImage : 灰階圖像(8UC1/16SC1/32FC1)
 //colorbarImage : 灰階色條圖像(8UC1)
-//flag : 處理數據型態(0為正、1為負)
-void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage, bool flag = 0);
+void DrawGrayBar(InputArray _grayImage, OutputArray _graybarImage);
 
-//將灰階圖像轉以紅藍色條顯示
+//將灰階圖像轉以紅藍色條顯示並自動拉伸
 //grayImage : 灰階圖像(8UC1/16SC1/32FC1)
 //colorbarImage : 紅藍色條圖像(8UC3)
-//flag : 處理數據型態(0為正、1為負)
-void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage, bool flag = 0);
-
-//將梯度圖像轉以色環方向顯示
-//gradm : 梯度幅值(8UC1)
-//gradd : 梯度方向(32FC1)
-//colorringImage : 色環方向圖像(8UC3)
-void DrawColorRing(InputArray _gradm, InputArray _gradd, OutputArray _colorringImage);
+void DrawColorBar(InputArray _grayImage, OutputArray _colorbarImage);
 
 //將梯度圖像轉以色環方向顯示
 //gradf : 梯度場(16SC2)

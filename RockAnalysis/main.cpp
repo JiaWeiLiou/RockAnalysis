@@ -138,7 +138,7 @@ int main()
 	Mat gradf;			//梯度場域(16SC2)
 	GradientField(gradx, grady, gradf);
 
-	Mat gradm, gradd;			//梯度幅值及梯度方向(32FC1)
+	Mat gradm, gradd;			//梯度幅值及梯度方向(8UC1、32FC1)
 	CalculateGradient(gradf, gradm, gradd);
 
 	Mat gradx_G, grady_G, gradm_G, gradm_R, gradd_C, gradf_C;			//輸出用(8UC1、8UC1、8UC1、8UC3、8UC3、8UC3)
@@ -180,14 +180,14 @@ int main()
 	Mat gradmDIV;			//消除梯度幅值區域亮度(8UC1)
 	DivideLine(gradm, gradmBlur, gradmDIV);
 
-	Mat gradmDIV_G, gradfDIV_C;			//輸出用(8UC1、8UC3)
+	Mat gradmDIV_G, gradmDIV_R;			//輸出用(8UC1、8UC3)
 	DrawGrayBar(gradmDIV, gradmDIV_G);
-	DrawColorRing(gradmDIV, gradd, gradfDIV_C);
+	DrawColorBar(gradmDIV, gradmDIV_R);
 
 	string gradmDIV_G_file = filepath + "\\" + infilename + "_7.0_DIV_M(G).png";		//消除梯度幅值區域亮度(灰階)
 	imwrite(gradmDIV_G_file, gradmDIV_G);
-	string gradfDIV_C_file = filepath + "\\" + infilename + "_7.1_DIV_F(C).png";		//消除梯度幅值區域亮度(色環)
-	imwrite(gradfDIV_C_file, gradfDIV_C);
+	string gradmDIV_R_file = filepath + "\\" + infilename + "_7.1_DIV_M(R).png";		//消除梯度幅值區域亮度(紅藍)
+	imwrite(gradmDIV_R_file, gradmDIV_R);
 
 	/*二值化梯度幅值*/
 
@@ -284,7 +284,7 @@ int main()
 
 	string objectDT_G_file = filepath + "\\" + infilename + "_14.0_DT_O(G).png";			//距離轉換(灰階)
 	imwrite(objectDT_G_file, objectDT_G);
-	string objectDT_R_file = filepath + "\\" + infilename + "_14.1_DT_O(R).png";			//距離轉換(藍紅)
+	string objectDT_R_file = filepath + "\\" + infilename + "_14.1_DT_O(R).png";			//距離轉換(紅藍)
 	imwrite(objectDT_R_file, objectDT_R);
 
 	///*結合灰度圖像*/
@@ -298,7 +298,7 @@ int main()
 
 	//string objectAG_G_file = filepath + "\\" + infilename + "_15.0_AG_O(G).png";			//結合灰度圖像(灰階)
 	//imwrite(objectAG_G_file, objectAG_G);
-	//string objectAG_R_file = filepath + "\\" + infilename + "_15.1_AG_O(R).png";			//結合灰度圖像(藍紅)
+	//string objectAG_R_file = filepath + "\\" + infilename + "_15.1_AG_O(R).png";			//結合灰度圖像(紅藍)
 	//imwrite(objectAG_R_file, objectAG_R);
 
 	/*求取擴展區域最小值*/
@@ -328,11 +328,14 @@ int main()
 	Mat objectIM;		//加深低窪區(3FC1(BW))
 	ImposeMinima(objectDT, objectAL, objectIM);
 
-	Mat objectIM_G;		//輸出用(8UC1)
-	DrawGrayBar(objectIM, objectIM_G, 1);
+	Mat objectIM_G, objectIM_R;		//輸出用(8UC1、8UC3)
+	DrawGrayBar(objectIM, objectIM_G);
+	DrawColorBar(objectIM, objectIM_R);
 
 	string objectIM_G_file = filepath + "\\" + infilename + "_18.0_IM_O(G).png";			//加深低窪區(灰階)
 	imwrite(objectIM_G_file, objectIM_G);
+	string objectIM_R_file = filepath + "\\" + infilename + "_18.1_IM_O(R).png";			//加深低窪區(紅藍)
+	imwrite(objectIM_R_file, objectIM_R);
 
 	/*分水嶺演算法*/
 

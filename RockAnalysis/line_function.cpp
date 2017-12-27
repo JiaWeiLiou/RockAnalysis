@@ -112,8 +112,7 @@ void HysteresisCut(InputArray _gradm, InputArray _area, OutputArray _line)
 	Mat labelImg;
 	int labelNum = bwlabel(MT, labelImg, 4);
 	labelNum = labelNum + 1;	// include label 0
-	int* labeltable = new int[labelNum];		// initialize label table with zero  
-	memset(labeltable, 0, labelNum * sizeof(int));
+	int* labeltable = new int[labelNum]();		// initialize label table with zero  
 
 	for (int i = 0; i < gradm.rows; ++i)
 		for (int j = 0; j < gradm.cols; ++j)

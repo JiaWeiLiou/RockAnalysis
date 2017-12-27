@@ -50,8 +50,7 @@ void HysteresisThreshold(InputArray _grayImae, OutputArray _bwImage, int upperTh
 	Mat labelImg;
 	int labelNum = bwlabel(MT, labelImg, 4);
 	labelNum = labelNum + 1;	// include label 0
-	int* labeltable = new int[labelNum];		// initialize label table with zero  
-	memset(labeltable, 0, labelNum * sizeof(int));
+	int* labeltable = new int[labelNum]();		// initialize label table with zero
 
 	for (int i = 0; i < grayImae.rows; ++i)
 		for (int j = 0; j < grayImae.cols; ++j)
@@ -67,10 +66,10 @@ void HysteresisThreshold(InputArray _grayImae, OutputArray _bwImage, int upperTh
 			int  C, E;
 
 			if (i == 0) { C = 0; }
-			else { C = UT.at<uchar>(i - 1, j); }
+			else { C = LT.at<uchar>(i - 1, j); }
 
 			if (j == 0) { E = 0; }
-			else { E = UT.at<uchar>(i, j - 1); }
+			else { E = LT.at<uchar>(i, j - 1); }
 
 			// apply 4 connectedness  
 			if (C || E)
@@ -86,7 +85,7 @@ void HysteresisThreshold(InputArray _grayImae, OutputArray _bwImage, int upperTh
 		{
 			if (labeltable[labelImg.at<int>(i, j)] > 0)
 			{
-				bwImage.at<uchar>(i, j) = 255;
+				bwImage.at<uchar>(i, j) = 0;
 			}
 		}
 	delete[] labeltable;
