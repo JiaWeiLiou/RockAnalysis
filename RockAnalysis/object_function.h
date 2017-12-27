@@ -66,11 +66,14 @@ bool CheckIfPixelIsWatershed(int x, int y, Mat &label, Point2i &inLabeledNeighbo
 /*擴展區域最小值*/
 void ExtendLocalMinimaDetection(InputArray _objectDT, OutputArray _objectEM, float H);
 
+/*距離閥值*/
+void DistanceCut(InputArray _objectDT, OutputArray _objectDC, float percent);
+
 /*增加未標記之標籤*/
 void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL);
 
 /*加深低窪區*/
-void ImposeMinima(InputArray _objectDT, InputArray _objectAL, OutputArray _objectIM);
+void ImposeMinima(InputArray _objectDT, InputArray _objectOpen, InputArray _objectLC, OutputArray _objectIM);
 
 /*分水嶺轉換*/
 void WatershedTransform(InputArray _object, InputArray _objectIM, OutputArray _objectWT);
@@ -91,3 +94,6 @@ void ClearNoise(InputArray _binaryImg, OutputArray _clearAreaImage, int noise, i
 
 //疊加灰階影像
 void AddGray(InputArray _objectDT, InputArray _gray, OutputArray _objectAG);
+
+//標籤切割
+void LabelCut(InputArray _objectAL, InputArray _objectOpen, OutputArray _objectLC);

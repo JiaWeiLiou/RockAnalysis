@@ -346,6 +346,28 @@ void ExtendLocalMinimaDetection(InputArray _objectDT, OutputArray _objectEM, flo
 	LocalMinimaDetection(objectHMT, objectEM);
 }
 
+/*距離閥值*/
+void DistanceCut(InputArray _objectDT, OutputArray _objectDC, float percent)
+{
+	Mat objectDT = _objectDT.getMat();
+	CV_Assert(objectDT.type() == CV_32FC1);
+
+	_objectDC.create(objectDT.size(), CV_8UC1);
+	Mat objectDC = _objectDC.getMat();
+
+	float maxvalue = 0;
+
+	// find max  and min value
+	for (int i = 0; i < objectDT.rows; ++i)
+		for (int j = 0; j < objectDT.cols; ++j)
+			maxvalue = maxvalue > objectDT.at<float>(i, j) ? maxvalue : objectDT.at<float>(i, j);
+
+	// threshold
+	for (int i = 0; i < objectDT.rows; ++i)
+		for (int j = 0; j < objectDT.cols; ++j)
+			objectDC.at<uchar>(i, j) = objectDT.at<float>(i, j) > maxvalue * percent ? 255 : 0;
+}
+
 /*增加未標記之標籤*/
 void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL)
 {
@@ -386,13 +408,16 @@ void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL)
 }
 
 /*加深低窪區*/
-void ImposeMinima(InputArray _objectDT, InputArray _objectAL, OutputArray _objectIM)
+void ImposeMinima(InputArray _objectDT, InputArray _objectOpen, InputArray _objectLC, OutputArray _objectIM)
 {
 	Mat objectDT = _objectDT.getMat();
 	CV_Assert(objectDT.type() == CV_32FC1);
 
-	Mat objectAL = _objectAL.getMat();
-	CV_Assert(objectAL.type() == CV_8UC1);
+	Mat objectOpen = _objectOpen.getMat();
+	CV_Assert(objectOpen.type() == CV_8UC1);
+
+	Mat objectLC = _objectLC.getMat();
+	CV_Assert(objectLC.type() == CV_8UC1);
 
 	_objectIM.create(objectDT.size(), CV_32FC1);
 	Mat objectIM = _objectIM.getMat();
@@ -401,6 +426,7 @@ void ImposeMinima(InputArray _objectDT, InputArray _objectAL, OutputArray _objec
 	for (int i = 0; i < objectDT.rows; ++i)
 		for (int j = 0; j < objectDT.cols; ++j)
 		{
+			if (objectOpen.at<uchar>(i, j) == 0) { objectDT.at<float>(i, j) = 0.0f; }
 			objectDT.at<float>(i, j) = -objectDT.at<float>(i, j);
 			if (objectDT.at<float>(i, j) < min) { min = objectDT.at<float>(i, j); }
 		}
@@ -410,7 +436,7 @@ void ImposeMinima(InputArray _objectDT, InputArray _objectAL, OutputArray _objec
 			
 	for (int i = 0; i < objectDT.rows; ++i)
 		for (int j = 0; j < objectDT.cols; ++j)
-			if (objectAL.at<uchar>(i, j) != 0) { objectIM.at<float>(i, j) = min; }
+			if (objectLC.at<uchar>(i, j) != 0) { objectIM.at<float>(i, j) = min; }
 }
 
 /*分水嶺轉換*/
@@ -703,4 +729,24 @@ void AddGray(InputArray _objectDT, InputArray _gray, OutputArray _objectAG)
 	for (int i = 0; i < objectDT.rows; ++i)
 		for (int j = 0; j < objectDT.cols; ++j)
 			objectAG.at<float>(i, j) = objectDT.at<float>(i, j) + gray.at<uchar>(i, j);
+}
+
+//標籤切割
+void LabelCut(InputArray _objectAL, InputArray _objectOpen, OutputArray _objectLC)
+{
+	Mat objectAL = _objectAL.getMat();
+	CV_Assert(objectAL.type() == CV_8UC1);
+
+	Mat objectOpen = _objectOpen.getMat();
+	CV_Assert(objectOpen.type() == CV_8UC1);
+
+	_objectLC.create(objectAL.size(), CV_8UC1);
+	Mat objectLC = _objectLC.getMat();
+
+	objectAL.copyTo(objectLC);
+
+	for (int i = 0; i < objectLC.rows; ++i)
+		for (int j = 0; j < objectLC.cols; ++j)
+			if (objectOpen.at<uchar>(i,j) == 0)
+				objectLC.at<uchar>(i, j) = 0;
 }
