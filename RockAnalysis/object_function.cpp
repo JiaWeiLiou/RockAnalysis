@@ -367,7 +367,7 @@ void DistanceCut(InputArray _objectDT, OutputArray _objectDC, float percent)
 		for (int j = 0; j < objectDT.cols; ++j)
 			objectDC.at<uchar>(i, j) = objectDT.at<float>(i, j) > maxvalue * percent ? 255 : 0;
 
-	Mat elementOpen = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+	Mat elementOpen = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
 	morphologyEx(objectDC, objectDC, MORPH_OPEN, elementOpen);
 }
 
@@ -752,4 +752,26 @@ void LabelCut(InputArray _objectAL, InputArray _objectOpen, OutputArray _objectL
 		for (int j = 0; j < objectLC.cols; ++j)
 			if (objectOpen.at<uchar>(i,j) == 0)
 				objectLC.at<uchar>(i, j) = 0;
+}
+
+//刪除邊界物件
+void BWEdgeDelete(InputArray _object, OutputArray _objectED)
+{
+	Mat object = _object.getMat();
+	CV_Assert(object.type() == CV_8UC1);
+
+	_objectED.create(object.size(), CV_8UC1);
+	Mat objectED = _objectED.getMat();
+
+	object.copyTo(objectED);
+	for (int i = 0; i < objectED.cols; ++i)
+	{
+		if (objectED.at<uchar>(0, i) == 255) { floodFill(objectED, Point(i, 0), 0); }
+		if (objectED.at<uchar>(objectED.rows - 1, i) == 255) { floodFill(objectED, Point(i, objectED.rows - 1), 0); }
+	}
+	for (int i = 0; i < objectED.rows; ++i)
+	{
+		if (objectED.at<uchar>(i, 0) == 255) { floodFill(objectED, Point(0, i), 0); }
+		if (objectED.at<uchar>(i, objectED.cols - 1) == 255) { floodFill(objectED, Point(objectED.cols - 1, i), 0); }
+	}
 }

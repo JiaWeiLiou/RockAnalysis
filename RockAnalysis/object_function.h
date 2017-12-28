@@ -97,3 +97,6 @@ void AddGray(InputArray _objectDT, InputArray _gray, OutputArray _objectAG);
 
 //標籤切割
 void LabelCut(InputArray _objectAL, InputArray _objectOpen, OutputArray _objectLC);
+
+//刪除邊界物件
+void BWEdgeDelete(InputArray _object, OutputArray _objectED);

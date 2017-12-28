@@ -327,7 +327,7 @@ int main()
 
 	/*加深低窪區*/
 
-	Mat objectIM;		//加深低窪區(3FC1(BW))
+	Mat objectIM;		//加深低窪區(32FC1)
 	ImposeMinima(objectDT, objectOpen, objectAL, objectIM);
 
 	Mat objectIM_G, objectIM_R;		//輸出用(8UC1、8UC3)
@@ -341,7 +341,7 @@ int main()
 
 	/*分水嶺演算法*/
 
-	Mat objectWT;		//分水嶺演算法(3SC1(BW))
+	Mat objectWT;		//分水嶺演算法(8UC1(BW))
 	WatershedTransform(objectOpen, objectIM, objectWT);
 
 	Mat objectWT_L, objectWT_I;		//輸出用(8UC3、8UC3)
@@ -352,8 +352,24 @@ int main()
 	imwrite(objectWT_B_file, objectWT);
 	string  objectWT_L_file = filepath + "\\" + infilename + "_19.1_WT_O(L).png";			//分水嶺演算法(標籤)
 	imwrite(objectWT_L_file, objectWT_L);
-	string  objectWT_I_file = filepath + "\\" + infilename + "_19._WT_O(I).png";			//分水嶺演算法(疊圖)
+	string  objectWT_I_file = filepath + "\\" + infilename + "_19.2_WT_O(I).png";			//分水嶺演算法(疊圖)
 	imwrite(objectWT_I_file, objectWT_I);
+
+	/*刪除邊界物件*/
+
+	Mat objectED;		//刪除邊界物件(3SC1(BW))
+	BWEdgeDelete(objectWT, objectED);
+
+	Mat objectED_L, objectED_I;		//輸出用(8UC3、8UC3)
+	DrawLabel(objectED, objectED_L);
+	DrawImage(objectED, image, objectED_I);
+
+	string  objectED_B_file = filepath + "\\" + infilename + "_20.0_ED_O(B).png";			//刪除邊界物件(二值)
+	imwrite(objectED_B_file, objectED);
+	string  objectED_L_file = filepath + "\\" + infilename + "_20.1_ED_O(L).png";			//刪除邊界物件(標籤)
+	imwrite(objectED_L_file, objectED_L);
+	string  objectED_I_file = filepath + "\\" + infilename + "_20.2_ED_O(I).png";			//刪除邊界物件(疊圖)
+	imwrite(objectED_I_file, objectED_I);
 
 	return 0;
 }
