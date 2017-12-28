@@ -495,15 +495,16 @@ vector<Point2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage)
 	vector<Point2f> ellipse_param;
 
 	for (int i = 0; i < objectNum; ++i)
-	{
-		RotatedRect ellipse_obj = fitEllipse(pointset[i]);
-		
-		//畫出擬合的橢圓
-		ellipse(ellipseImage, ellipse_obj, Scalar(255), 1, CV_AA);
+		if (pointset[i].size() > 5)
+		{
+			RotatedRect ellipse_obj = fitEllipse(pointset[i]);
 
-		//儲存橢圓參數
-		ellipse_param.push_back(ellipse_obj.size);
-	}
+			//畫出擬合的橢圓
+			ellipse(ellipseImage, ellipse_obj, Scalar(255), 1, CV_AA);
+
+			//儲存橢圓參數
+			ellipse_param.push_back(ellipse_obj.size);
+		}
 
 	return ellipse_param;
 }
