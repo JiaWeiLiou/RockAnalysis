@@ -46,6 +46,10 @@ int main()
 	int H0 = 0;
 	std::cin >> H0;
 
+	std::cout << "Please enter ratio for distance threshold : ";
+	int ratio = 0;
+	std::cin >> ratio;
+
 	/*設定輸出文件名*/
 
 	int pos1 = infile.find_last_of('/\\');
@@ -287,20 +291,6 @@ int main()
 	string objectDT_R_file = filepath + "\\" + infilename + "_14.1_DT_O(R).png";			//距離轉換(紅藍)
 	imwrite(objectDT_R_file, objectDT_R);
 
-	///*結合灰度圖像*/
-
-	//Mat objectAG;		//結合灰度圖像(32FC1)
-	//AddGray(objectDT, grayDIV, objectAG);
-
-	//Mat objectAG_G, objectAG_R;		//輸出用(8UC1、8UC3)
-	//DrawGrayBar(objectAG, objectAG_G);
-	//DrawColorBar(objectAG, objectAG_R);
-
-	//string objectAG_G_file = filepath + "\\" + infilename + "_15.0_AG_O(G).png";			//結合灰度圖像(灰階)
-	//imwrite(objectAG_G_file, objectAG_G);
-	//string objectAG_R_file = filepath + "\\" + infilename + "_15.1_AG_O(R).png";			//結合灰度圖像(紅藍)
-	//imwrite(objectAG_R_file, objectAG_R);
-
 	/*求取擴展區域最小值*/
 
 	Mat objectEM;		//求取擴展區域最小值(8UC1(BW))
@@ -315,7 +305,7 @@ int main()
 	/*距離閥值*/
 
 	Mat objectDC;		//距離閥值(8UC1(BW))
-	DistanceCut(objectDT, objectDC, 0.65);
+	DistanceCut(objectDT, objectDC, ratio);
 	addWeighted(objectEM, 1, objectDC, 1, 0, objectDC);
 
 	Mat objectDC_S;		//輸出用(8UC1)
