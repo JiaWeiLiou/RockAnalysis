@@ -467,3 +467,43 @@ void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineIm
 			if (object.at<uchar>(i, j) == 0) { combineImae.at<uchar>(i, j) = 0; }
 		}
 }
+
+//將二值圖像擬合橢圓並顯示
+vector<Point2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage)
+{
+	Mat object = _object.getMat();
+	CV_Assert(object.type() == CV_8UC1);
+
+	_ellipseImage.create(object.size(), CV_8UC1);
+	Mat ellipseImage = _ellipseImage.getMat();
+
+	for (int i = 0; i < ellipseImage.rows; ++i)
+		for (int j = 0; j < ellipseImage.cols; ++j)
+			ellipseImage.at<uchar>(i, j) = 0;
+
+	Mat labels;
+	int objectNum = bwlabel(object, labels, 4);
+
+	vector<vector<Point2i>> pointset;
+	for (int i = 0; i < objectNum; ++i) { pointset.push_back(vector<Point2i>()); }
+
+	for (int i = 0; i < labels.rows; ++i)
+		for (int j = 0; j < labels.cols; ++j)
+			if (labels.at<int>(i, j) != 0)
+				pointset[labels.at<int>(i, j) - 1].push_back(Point2i(j, i));
+
+	vector<Point2f> ellipse_param;
+
+	for (int i = 0; i < objectNum; ++i)
+	{
+		RotatedRect ellipse_obj = fitEllipse(pointset[i]);
+		
+		//畫出擬合的橢圓
+		ellipse(ellipseImage, ellipse_obj, Scalar(255), 1, CV_AA);
+
+		//儲存橢圓參數
+		ellipse_param.push_back(ellipse_obj.size);
+	}
+
+	return ellipse_param;
+}

@@ -60,3 +60,9 @@ void DrawImage(InputArray _bwImage, InputArray _image, OutputArray _combineImage
 //objectSeed : 種子物件(8UC1(BW))
 //combineImage : 疊合圖像(8UC1)
 void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineImae);
+
+//將二值圖像擬合橢圓並顯示
+//object : 原始物件(8UC1(BW))
+//ellopseImage : 橢圓圖像(8UC1(BW))
+//return : 所有物件之長短軸
+vector<Point2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage);

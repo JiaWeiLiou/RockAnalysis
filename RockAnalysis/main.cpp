@@ -371,6 +371,14 @@ int main()
 	string  objectED_I_file = filepath + "\\" + infilename + "_20.2_ED_O(I).png";			//刪除邊界物件(疊圖)
 	imwrite(objectED_I_file, objectED_I);
 
+	/*擬合橢圓*/
+
+	Mat objectFE;		//擬合橢圓(8UC1)
+	vector<Point2f> ellipse = DrawEllipse(objectED, objectFE);
+
+	string  objectFE_B_file = filepath + "\\" + infilename + "_21.0_FE_O(B).png";			//擬合橢圓(二值)
+	imwrite(objectFE_B_file, objectFE);
+
 	return 0;
 }
 
