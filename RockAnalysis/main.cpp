@@ -274,7 +274,7 @@ int main()
 	imwrite(objectFH_B_file, objectFH);
 	string  objectFH_L_file = filepath + "\\" + infilename + "_13.1_FH_O(L).png";			//¶ñ¸ÉªÅ¬}(¼ÐÅÒ)
 	imwrite(objectFH_L_file, objectFH_L);
-	string  objectFH_I_file = filepath + "\\" + infilename + "_13._FH_O(I).png";			//¶ñ¸ÉªÅ¬}(Å|¹Ï)
+	string  objectFH_I_file = filepath + "\\" + infilename + "_13.2_FH_O(I).png";			//¶ñ¸ÉªÅ¬}(Å|¹Ï)
 	imwrite(objectFH_I_file, objectFH_I);
 
 	/*¶ZÂ÷Âà´«*/
