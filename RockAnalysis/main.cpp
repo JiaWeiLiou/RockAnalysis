@@ -47,7 +47,7 @@ int main()
 	std::cin >> H0;
 
 	std::cout << "Please enter ratio for distance threshold : ";
-	int ratio = 0;
+	float ratio = 0.0f;
 	std::cin >> ratio;
 
 	/*設定輸出文件名*/
