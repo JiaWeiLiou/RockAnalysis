@@ -366,6 +366,9 @@ void DistanceCut(InputArray _objectDT, OutputArray _objectDC, float percent)
 	for (int i = 0; i < objectDT.rows; ++i)
 		for (int j = 0; j < objectDT.cols; ++j)
 			objectDC.at<uchar>(i, j) = objectDT.at<float>(i, j) > maxvalue * percent ? 255 : 0;
+
+	Mat elementOpen = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+	morphologyEx(objectDC, objectDC, MORPH_OPEN, elementOpen);
 }
 
 /*增加未標記之標籤*/
