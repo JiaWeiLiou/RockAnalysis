@@ -6,6 +6,11 @@
 //divideImage : 去除影像區域亮度(8UC1)
 void DivideArea(InputArray _grayImage, InputArray _blurImage, OutputArray _divideImage);
 
+//大津閥值
+//grayImage : 灰階影像(8UC1)
+//bwImage : 滯後閥值影像(8UC1(BW))
+void otsuThreshold(InputArray _grayImage, OutputArray _bwImage);
+
 //滯後閥值
 //grayImage : 灰階影像(8UC1)
 //bwImage : 滯後閥值影像(8UC1(BW))

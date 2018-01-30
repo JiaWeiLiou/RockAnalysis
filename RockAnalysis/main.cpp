@@ -6,45 +6,13 @@
 #include "line_function.h"
 #include "object_function.h"
 #include <iostream>
+#include <cmath>
 
 int main()
 {
 	std::cout << "Please enter image path : ";
 	string infile;
 	std::cin >> infile;
-
-	std::cout << "Please enter blur size for Area : ";
-	int blurAreaSize = 0;
-	std::cin >> blurAreaSize;
-
-	if (blurAreaSize % 2 == 0) { --blurAreaSize; }
-
-	std::cout << "Please enter upper threshold for Image : ";
-	int thresholdU = 0;
-	std::cin >> thresholdU;
-	std::cout << "Please enter lower threshold for Image : ";
-	int thresholdD = 0;
-	std::cin >> thresholdD;
-
-	if (thresholdD > thresholdU || thresholdD < 0 || thresholdU < 0)
-	{
-		thresholdU = 170;
-		thresholdD = 150;
-	}
-
-	std::cout << "Please enter blur size for Line : ";
-	int blurLineSize = 0;
-	std::cin >> blurLineSize;
-
-	if (blurLineSize % 2 == 0) { --blurLineSize; }
-
-	std::cout << "Please enter element size for Open : ";
-	int openSize = 0;
-	std::cin >> openSize;
-
-	std::cout << "Please enter H0 for H-minia transform : ";
-	int H0 = 0;
-	std::cin >> H0;
 
 	std::cout << "Please enter ratio for distance threshold : ";
 	float ratio = 0.0f;
@@ -64,6 +32,8 @@ int main()
 	Mat image = imread(infile);			//原始影像(8UC1 || 8UC3 )
 	if (!image.data) { printf("Oh，no，讀取image錯誤~！ \n"); return false; }
 
+	int imageMinLength = image.rows < image.cols ? image.rows : image.cols;
+	
 	/*轉換原始影像為灰階影像*/
 
 	Mat gray;			//灰階影像(8UC1)
@@ -78,13 +48,16 @@ int main()
 	string gray_R_file = filepath + "\\" + infilename + "_0.1_GRAY(R).png";			//轉換原始影像為灰階影像(紅藍)
 	imwrite(gray_R_file, gray_R);
 
-
 	/****基於面的影像萃取****/
 
 	/*模糊灰階影像*/
 
-	Mat grayBlur;			//模糊灰階影像(8UC1)	
-	GaussianBlur(gray, grayBlur, Size(blurAreaSize, blurAreaSize), 0, 0);
+	int ksize = ceil((double)imageMinLength / 10.0);
+	ksize = ksize % 2 ? ksize : ksize + 1;
+	double sigma = ksize / 5;
+
+	Mat grayBlur;			//模糊灰階影像(8UC1)
+	GaussianBlur(gray, grayBlur, Size(ksize, ksize), sigma, sigma);
 
 	Mat grayBlur_R;			//輸出用(8UC3)
 	DrawColorBar(grayBlur, grayBlur_R);
@@ -109,9 +82,11 @@ int main()
 
 	/*二值化灰階影像*/
 
+
+
 	Mat grayTH;			//二值化灰階影像(8UC1(BW))
-	//threshold(grayDIV, grayTH, 150, 255, THRESH_BINARY);
-	HysteresisThreshold(grayDIV, grayTH, thresholdU, thresholdD);
+	otsuThreshold(grayDIV, grayTH);
+	//HysteresisThreshold(grayDIV, grayTH, thresholdU, thresholdD);
 
 	string grayTH_B_file = filepath + "\\" + infilename + "_3.0_TH_I(B).png";			//二值化灰階影像(二值)
 	imwrite(grayTH_B_file, grayTH);
@@ -169,7 +144,7 @@ int main()
 	/*模糊梯度幅值*/
 
 	Mat gradmBlur;			//模糊梯度幅值(8UC1)	
-	GaussianBlur(gradm, gradmBlur, Size(blurLineSize, blurLineSize), 0, 0);
+	GaussianBlur(gradm, gradmBlur, Size(5, 5), 1, 1);
 
 	Mat gradmBlur_R;			//輸出用(8UC3)
 	DrawColorBar(gradmBlur, gradmBlur_R);
@@ -246,7 +221,12 @@ int main()
 	/*開運算*/
 
 	Mat objectOpen;			//開運算(8UC1(BW))
-	Mat elementO = getStructuringElement(MORPH_ELLIPSE, Size(openSize, openSize));
+	//Mat elementO = (Mat_<uchar>(5,5)<< 0,1,1,1,0,\
+	//								   1,1,1,1,1,\
+	//								   1,1,1,1,1,\
+	//								   1,1,1,1,1,\
+	//								   0,1,1,1,0);
+	Mat elementO = (Mat_<uchar>(3, 3) << 1, 1, 1, 1, 1, 1, 1, 1, 1);
 	morphologyEx(objectCOM, objectOpen, MORPH_OPEN, elementO);
 
 	Mat objectOpen_L, objectOpen_I;			//輸出用(8UC3、8UC3)
@@ -294,7 +274,7 @@ int main()
 	/*求取擴展區域最小值*/
 
 	Mat objectEM;		//求取擴展區域最小值(8UC1(BW))
-	ExtendLocalMinimaDetection(objectDT, objectEM, H0);
+	ExtendLocalMinimaDetection(objectDT, objectEM, 3);
 
 	Mat objectEM_S;		//輸出用(8UC1)
 	DrawSeed(objectFH, objectEM, objectEM_S);

@@ -18,6 +18,57 @@ void DivideArea(InputArray _grayImage, InputArray _blurImage, OutputArray _divid
 			divideImage.at<uchar>(i, j) = (double)grayImage.at<uchar>(i, j) / (double)blurImage.at<uchar>(i, j) > 1 ? 255 : ((double)grayImage.at<uchar>(i, j) / (double)blurImage.at<uchar>(i, j)) * 255;
 }
 
+//¤j¬z»Ö­È
+void otsuThreshold(InputArray _grayImage, OutputArray _bwImage)
+{
+	Mat grayImage = _grayImage.getMat();
+	CV_Assert(grayImage.type() == CV_8UC1);
+
+	_bwImage.create(grayImage.size(), CV_8UC1);
+	Mat bwImage = _bwImage.getMat();
+
+	unsigned int *hist = new unsigned int[256]();
+	for (size_t i = 0; i < grayImage.rows; ++i)
+		for (size_t j = 0; j < grayImage.cols; ++j)
+		{
+			++hist[grayImage.at<uchar>(i, j)];
+		}
+
+	unsigned int sumB = 0;
+	unsigned int sum1 = 0;
+	float wB = 0.0f;
+	float wF = 0.0f;
+	float mF = 0.0f;
+	float max_var = 0.0f;
+	float inter_var = 0.0f;
+	unsigned char th = 0;
+
+	for (size_t i = 0; i < 256; ++i) {
+		sum1 += i * hist[i];
+	}
+
+	for (size_t i = 0; i < 256; ++i)
+	{
+		wB += hist[i];
+		wF = grayImage.rows*grayImage.cols - wB;
+		if (wB == 0 || wF == 0) {
+			continue;
+		}
+		sumB += i * hist[i];
+		mF = (sum1 - sumB) / wF;
+		inter_var = wB * wF * ((sumB / wB) - mF) * ((sumB / wB) - mF);
+		if (inter_var >= max_var)
+		{
+			th = i;
+			max_var = inter_var;
+		}
+	}
+
+	delete[] hist;
+
+	cv::threshold(grayImage, bwImage, th, 255, THRESH_BINARY);
+}
+
 //º¢«á»Ö­È
 void HysteresisThreshold(InputArray _grayImae, OutputArray _bwImage, int upperThreshold, int lowerThreshold)
 {
