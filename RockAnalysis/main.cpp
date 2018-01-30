@@ -14,10 +14,6 @@ int main()
 	string infile;
 	std::cin >> infile;
 
-	std::cout << "Please enter ratio for distance threshold : ";
-	float ratio = 0.0f;
-	std::cin >> ratio;
-
 	/*設定輸出文件名*/
 
 	int pos1 = infile.find_last_of('/\\');
@@ -285,7 +281,7 @@ int main()
 	/*距離閥值*/
 
 	Mat objectDC;		//距離閥值(8UC1(BW))
-	DistanceCut(objectDT, objectDC, ratio);
+	DistanceCut(objectDT, objectDC);
 	addWeighted(objectEM, 1, objectDC, 1, 0, objectDC);
 
 	Mat objectDC_S;		//輸出用(8UC1)
@@ -308,7 +304,7 @@ int main()
 	/*加深低窪區*/
 
 	Mat objectIM;		//加深低窪區(32FC1)
-	ImposeMinima(objectDT, objectOpen, objectAL, objectIM);
+	ImposeMinima(objectDT, objectAL, objectIM);
 
 	Mat objectIM_G, objectIM_R;		//輸出用(8UC1、8UC3)
 	DrawGrayBar(objectIM, objectIM_G);
@@ -322,7 +318,7 @@ int main()
 	/*分水嶺演算法*/
 
 	Mat objectWT;		//分水嶺演算法(8UC1(BW))
-	WatershedTransform(objectOpen, objectIM, objectWT);
+	WatershedTransform(objectFH, objectIM, objectWT);
 
 	Mat objectWT_L, objectWT_I;		//輸出用(8UC3、8UC3)
 	DrawLabel(objectWT, objectWT_L);

@@ -347,7 +347,7 @@ void ExtendLocalMinimaDetection(InputArray _objectDT, OutputArray _objectEM, flo
 }
 
 /*距離閥值*/
-void DistanceCut(InputArray _objectDT, OutputArray _objectDC, float percent)
+void DistanceCut(InputArray _objectDT, OutputArray _objectDC)
 {
 	Mat objectDT = _objectDT.getMat();
 	CV_Assert(objectDT.type() == CV_32FC1);
@@ -355,20 +355,18 @@ void DistanceCut(InputArray _objectDT, OutputArray _objectDC, float percent)
 	_objectDC.create(objectDT.size(), CV_8UC1);
 	Mat objectDC = _objectDC.getMat();
 
-	float maxvalue = 0;
+	Mat objectHMT;
+	HMinimaTransform(objectDT, objectHMT, 3);
 
-	// find max  and min value
-	for (int i = 0; i < objectDT.rows; ++i)
-		for (int j = 0; j < objectDT.cols; ++j)
-			maxvalue = maxvalue > objectDT.at<float>(i, j) ? maxvalue : objectDT.at<float>(i, j);
+	int imageMinLength = objectDT.rows < objectDT.cols ? objectDT.rows : objectDT.cols;
 
 	// threshold
-	for (int i = 0; i < objectDT.rows; ++i)
-		for (int j = 0; j < objectDT.cols; ++j)
-			objectDC.at<uchar>(i, j) = objectDT.at<float>(i, j) > maxvalue * percent ? 255 : 0;
+	for (int i = 0; i < objectHMT.rows; ++i)
+		for (int j = 0; j < objectHMT.cols; ++j)
+			objectDC.at<uchar>(i, j) = objectHMT.at<float>(i, j) > 30 ? 255 : 0;
 
-	Mat elementOpen = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
-	morphologyEx(objectDC, objectDC, MORPH_OPEN, elementOpen);
+	//Mat elementOpen = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
+	//morphologyEx(objectDC, objectDC, MORPH_OPEN, elementOpen);
 }
 
 /*增加未標記之標籤*/
@@ -411,13 +409,10 @@ void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL)
 }
 
 /*加深低窪區*/
-void ImposeMinima(InputArray _objectDT, InputArray _objectOpen, InputArray _objectLC, OutputArray _objectIM)
+void ImposeMinima(InputArray _objectDT, InputArray _objectLC, OutputArray _objectIM)
 {
 	Mat objectDT = _objectDT.getMat();
 	CV_Assert(objectDT.type() == CV_32FC1);
-
-	Mat objectOpen = _objectOpen.getMat();
-	CV_Assert(objectOpen.type() == CV_8UC1);
 
 	Mat objectLC = _objectLC.getMat();
 	CV_Assert(objectLC.type() == CV_8UC1);
@@ -429,7 +424,6 @@ void ImposeMinima(InputArray _objectDT, InputArray _objectOpen, InputArray _obje
 	for (int i = 0; i < objectDT.rows; ++i)
 		for (int j = 0; j < objectDT.cols; ++j)
 		{
-			if (objectOpen.at<uchar>(i, j) == 0) { objectDT.at<float>(i, j) = 0.0f; }
 			objectDT.at<float>(i, j) = -objectDT.at<float>(i, j);
 			if (objectDT.at<float>(i, j) < min) { min = objectDT.at<float>(i, j); }
 		}
@@ -539,26 +533,38 @@ void BWFillhole(InputArray _bwImage, OutputArray _bwFillhole)
 	_bwFillhole.create(bwImage.size(), CV_8UC1);
 	Mat bwFillhole = _bwFillhole.getMat();
 
-	Mat mask;
-	bwImage.copyTo(mask);
-	for (int i = 0; i < mask.cols; ++i)
-	{
-		if (mask.at<uchar>(0, i) == 0) { floodFill(mask, Point(i, 0), 255, 0, 10, 10, 8); }
-		if (mask.at<uchar>(mask.rows - 1, i) == 0) { floodFill(mask, Point(i, mask.rows - 1), 255, 0, 10, 10, 8); }
-	}
-	for (int i = 0; i < mask.rows; ++i)
-	{
-		if (mask.at<uchar>(i, 0) == 0) { floodFill(mask, Point(0, i), 255, 0, 10, 10, 8); }
-		if (mask.at<uchar>(i, mask.cols - 1) == 0) { floodFill(mask, Point(mask.cols - 1, i), 255, 0, 10, 10, 8); }
-	}
+	Mat holeImg(bwImage.rows + 2, bwImage.cols + 2, CV_8UC1, 255);
+	for (int i = 1; i < holeImg.rows - 1; ++i)
+		for (int j = 1; j < holeImg.cols - 1; ++j)
+			holeImg.at<uchar>(i, j) = bwImage.at<uchar>(i - 1, j - 1) ? 0 : 255;
 
+	Mat labelImg;
+	int num = bwlabel(holeImg, labelImg, 8);
 
-	// Compare mask with original.
-	bwImage.copyTo(bwFillhole);
-	for (int i = 0; i < mask.rows; ++i)
-		for (int j = 0; j < mask.cols; ++j)
-			if (mask.at<uchar>(i, j) == 0)
-				bwFillhole.at<uchar>(i, j) = 255;
+	int *labeltable = new int[num + 1]();
+
+	// calculate obj size
+	for (size_t i = 0; i < labelImg.rows; ++i)
+		for (size_t j = 0; j < labelImg.cols; ++j)
+			++labeltable[labelImg.at<int>(i, j)];
+
+	// find max size
+	int maxSize = 0;
+	for (size_t i = 1; i < num + 1; ++i)
+		maxSize = labeltable[i] > maxSize ? labeltable[i] : maxSize;
+
+	int tolSize = ceil((double)maxSize * 0.001);
+
+	for (size_t i = 0; i < labelImg.rows; ++i)
+		for (size_t j = 0; j < labelImg.cols; ++j)
+			if (labeltable[labelImg.at<int>(i, j)] < tolSize)
+				holeImg.at<uchar>(i, j) = 0;
+
+	for (int i = 0; i < bwFillhole.rows; ++i)
+		for (int j = 0; j < bwFillhole.cols; ++j)
+			bwFillhole.at<uchar>(i, j) = holeImg.at<uchar>(i + 1, j + 1) ? 0 : 255;
+
+	delete[] labeltable;
 }
 
 //去除雜訊
