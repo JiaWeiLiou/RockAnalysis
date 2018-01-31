@@ -7,6 +7,7 @@
 #include "object_function.h"
 #include <iostream>
 #include <cmath>
+#include <ctime>
 
 int main()
 {
@@ -24,6 +25,8 @@ int main()
 	/****基礎影像設定****/
 
 	/*載入原始影像*/
+
+	time_t time = clock();
 
 	Mat image = imread(infile);			//原始影像(8UC1 || 8UC3 )
 	if (!image.data) { printf("Oh，no，讀取image錯誤~！ \n"); return false; }
@@ -354,6 +357,12 @@ int main()
 
 	string  objectFE_B_file = filepath + "\\" + infilename + "_21.0_FE_O(B).png";			//擬合橢圓(二值)
 	imwrite(objectFE_B_file, objectFE);
+
+	time = clock() - time;
+
+	cout << "spend" << (float)time / CLOCKS_PER_SEC << "seconds" << endl;
+
+	system("pause");
 
 	return 0;
 }
