@@ -484,6 +484,14 @@ vector<Point2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage)
 	Mat labels;
 	int objectNum = bwlabel(object, labels, 4);
 
+	Mat elementO = (Mat_<uchar>(3, 3) << 1, 1, 1, 1, 1, 1, 1, 1, 1);
+	Mat objectErode;
+	morphologyEx(object, objectErode, MORPH_ERODE, elementO);
+
+	for (int i = 0; i < object.rows; ++i)
+		for (int j = 0; j < object.cols; ++j)
+			labels.at<int>(i, j) = objectErode.at<uchar>(i,j) ? 0 : labels.at<int>(i, j);
+
 	vector<vector<Point2i>> pointset;
 	for (int i = 0; i < objectNum; ++i) { pointset.push_back(vector<Point2i>()); }
 
