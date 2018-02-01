@@ -65,4 +65,4 @@ void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineIm
 //object : 原始物件(8UC1(BW))
 //ellopseImage : 橢圓圖像(8UC1(BW))
 //return : 所有物件之長短軸
-vector<Point2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage);
+vector<Size2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage);

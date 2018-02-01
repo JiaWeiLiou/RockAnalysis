@@ -6,6 +6,7 @@
 #include "line_function.h"
 #include "object_function.h"
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <ctime>
 
@@ -353,10 +354,22 @@ int main()
 	/*ÀÀ¦X¾ò¶ê*/
 
 	Mat objectFE;		//ÀÀ¦X¾ò¶ê(8UC1)
-	vector<Point2f> ellipse = DrawEllipse(objectED, objectFE);
+	vector<Size2f> ellipse = DrawEllipse(objectED, objectFE);
 
 	string  objectFE_B_file = filepath + "\\" + infilename + "_21.0_FE_O(B).png";			//ÀÀ¦X¾ò¶ê(¤G­È)
 	imwrite(objectFE_B_file, objectFE);
+
+	fstream outfile;
+
+	string outputPath = filepath + "\\" + "GrainSize.txt";
+
+	outfile.open(outputPath, ios::out | ios::trunc);
+
+	for (size_t i = 0; i < ellipse.size(); ++i) {
+		outfile << ellipse[i].width << "\t" << ellipse[i].height << endl;
+	}
+
+	outfile.close();
 
 	time = clock() - time;
 

@@ -469,7 +469,7 @@ void DrawSeed(InputArray _object, InputArray _objectSeed, OutputArray _combineIm
 }
 
 //將二值圖像擬合橢圓並顯示
-vector<Point2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage)
+vector<Size2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage)
 {
 	Mat object = _object.getMat();
 	CV_Assert(object.type() == CV_8UC1);
@@ -493,16 +493,16 @@ vector<Point2f> DrawEllipse(InputArray _object, OutputArray _ellipseImage)
 			labels.at<int>(i, j) = objectErode.at<uchar>(i,j) ? 0 : labels.at<int>(i, j);
 
 	vector<vector<Point2i>> pointset;
-	for (int i = 0; i < objectNum; ++i) { pointset.push_back(vector<Point2i>()); }
+	for (int i = 0; i < objectNum - 1; ++i) { pointset.push_back(vector<Point2i>()); }
 
 	for (int i = 0; i < labels.rows; ++i)
 		for (int j = 0; j < labels.cols; ++j)
 			if (labels.at<int>(i, j) != 0)
 				pointset[labels.at<int>(i, j) - 1].push_back(Point2i(j, i));
 
-	vector<Point2f> ellipse_param;
+	vector<Size2f> ellipse_param;
 
-	for (int i = 0; i < objectNum; ++i)
+	for (int i = 0; i < objectNum - 1; ++i)
 		if (pointset[i].size() > 5)
 		{
 			RotatedRect ellipse_obj = fitEllipse(pointset[i]);

@@ -364,9 +364,6 @@ void DistanceCut(InputArray _objectDT, OutputArray _objectDC)
 	for (int i = 0; i < objectHMT.rows; ++i)
 		for (int j = 0; j < objectHMT.cols; ++j)
 			objectDC.at<uchar>(i, j) = objectHMT.at<float>(i, j) > imageMinLength * 0.025 ? 255 : 0;
-
-	//Mat elementOpen = getStructuringElement(MORPH_ELLIPSE, Size(5, 5));
-	//morphologyEx(objectDC, objectDC, MORPH_OPEN, elementOpen);
 }
 
 /*增加未標記之標籤*/
