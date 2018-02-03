@@ -385,7 +385,7 @@ void AddLabel(InputArray _object, InputArray _objectSeed, OutputArray _objectAL)
 	objectSeed.copyTo(objectAL);
 
 	Mat labels;
-	int num = bwlabel(object, labels, 8) + 1;	//include label 0
+	int num = bwlabel(object, labels, 4) + 1;	//include label 0
 
 	int *labeltable = new int[num]();  
 
